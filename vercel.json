@@ -11,5 +11,11 @@
       "source": "/icon.png",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
     }
+  ],
+  "rewrites": [
+    { "source": "/local-worker/:path*", "destination": "https://app.ecom-ai-builder.com/local-worker/:path*" },
+    { "source": "/oauth/:path*", "destination": "https://app.ecom-ai-builder.com/oauth/:path*" },
+    { "source": "/i/:path*", "destination": "https://app.ecom-ai-builder.com/i/:path*" },
+    { "source": "/shopify/:path*", "destination": "https://app.ecom-ai-builder.com/shopify/:path*" }
   ]
 }
