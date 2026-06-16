@@ -2156,7 +2156,7 @@
                 <small>.dmg · Apple Silicon</small>
               </div>
             </div>
-            <a class="btn btn-primary" href="https://ecom-ai-builder.fly.dev/download/mac" id="btn-mac"
+            <a class="btn btn-primary" href="https://github.com/fiveup-review/ecom-ai-builder/releases/latest/download/ECOM-AI-BUILDER-macOS.dmg" id="btn-mac"
               >Télécharger pour Mac</a
             >
             <div class="meta">
@@ -2173,7 +2173,7 @@
                 <small>.exe · installeur</small>
               </div>
             </div>
-            <a class="btn btn-primary" href="https://ecom-ai-builder.fly.dev/download/win" id="btn-win"
+            <a class="btn btn-primary" href="https://github.com/fiveup-review/ecom-ai-builder/releases/latest/download/ECOM-AI-BUILDER-Windows.exe" id="btn-win"
               >Télécharger pour Windows</a
             >
             <div class="meta">
@@ -2337,14 +2337,14 @@
         }
       })();
 
-      // --- Version depuis la prod (API sur le domaine du serveur fly) ---
-      fetch("https://ecom-ai-builder.fly.dev/api/latest")
+      // --- Version = dernière Release GitHub (API publique, CORS ok) ---
+      fetch("https://api.github.com/repos/fiveup-review/ecom-ai-builder/releases/latest")
         .then(function (r) {
           return r.json();
         })
         .then(function (d) {
-          if (d && d.version) {
-            var v = "v" + d.version;
+          if (d && d.tag_name) {
+            var v = d.tag_name.charAt(0) === "v" ? d.tag_name : "v" + d.tag_name;
             document.getElementById("ver").textContent = v;
             document.getElementById("foot-ver").textContent = v;
           }

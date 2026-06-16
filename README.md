@@ -1,49 +1,56 @@
-# ECOM AI BUILDER — Landing
+<div align="center">
 
-Site vitrine **statique pur** (aucun build), déployé sur **Vercel**, séparé du
-bot/serveur (repo `shopify-ai-builder`). On le redéploie sans jamais redémarrer
-le bot.
+# ECOM AI BUILDER
 
-## Structure
+**De l'idée produit à une boutique Shopify complète — piloté par l'IA, en quelques minutes.**
 
-```
-index.html        page unique
-icon.png
-images/           photos avis + vidéos démo
-vercel.json       static (cleanUrls + cache headers), pas de build
-```
+[🌐 Site](https://ecom-ai-builder.com) · [⬇️ Télécharger](#téléchargement) · [💬 Rejoindre](https://whop.com/joined/ecom-ai-builder/)
 
-Vercel sert les fichiers tels quels (Framework Preset = « Other », pas de build
-command). Tout est en clair côté client — il n'y a aucun secret ici.
+</div>
 
-## Ce qui reste sur le serveur fly (PAS ici)
+---
 
-La landing ne sert PAS les binaires. Les boutons « Télécharger » et l'appel de
-version pointent en dur vers le serveur fly :
+## C'est quoi ?
 
-- `https://ecom-ai-builder.fly.dev/download/mac` · `.../download/win`
-- `https://ecom-ai-builder.fly.dev/api/latest`
+ECOM AI BUILDER automatise tout le test de produit e-commerce : recherche produit,
+identité de marque, charte graphique, logo, catalogue, visuels et mise en ligne sur
+Shopify. Tu pilotes le tout depuis Discord, tu valides à chaque étape, l'IA fait le reste.
 
-> La landing occupe `ecom-ai-builder.com`, donc ces liens visent le **fallback
-> fly** `ecom-ai-builder.fly.dev`. Si tu mets fly derrière un sous-domaine custom
-> (ex. `app.ecom-ai-builder.com`), remplace les 3 URLs dans `index.html`.
+## Ce que ça fait
 
-## Pixels Meta / TikTok
+- **🔎 Recherche produit** — détection de produits gagnants à partir des tendances du marché.
+- **🏷️ Marque** — analyse du marché, persona, et propositions de noms.
+- **🎨 Charte & logo** — couleurs, typographies et logo générés sur mesure.
+- **📦 Catalogue** — fiches produits complètes, prêtes à vendre.
+- **🖼️ Visuels** — packshots, images d'ambiance et visuels de bénéfices générés par IA.
+- **🛒 Mise en ligne Shopify** — boutique livrée, thème et pages incluses.
 
-Hardcodés dans `index.html` (cherche `var PIXEL_ID = ""`). Colle ton ID Meta et
-ton ID TikTok. Vide = le pixel ne se charge pas. Ce ne sont **pas** des secrets
-(visibles dans le HTML client), donc inutile de passer par des env vars.
+Tu gardes la main : chaque étape se valide d'un clic dans Discord.
 
-## Dev local
+## Téléchargement
 
-```
-npm run dev      # sert le dossier en local
-```
+L'app de bureau exécute le pipeline sur ta machine.
 
-## ⚠️ Note CORS (version affichée)
+| Système | Lien |
+| --- | --- |
+| **macOS** (Apple Silicon) | [Télécharger le .dmg](https://github.com/fiveup-review/ecom-ai-builder/releases/latest/download/ECOM-AI-BUILDER-macOS.dmg) |
+| **Windows** (x64) | [Télécharger le .exe](https://github.com/fiveup-review/ecom-ai-builder/releases/latest/download/ECOM-AI-BUILDER-Windows.exe) |
 
-`fetch("https://ecom-ai-builder.fly.dev/api/latest")` est cross-origin. Si le
-serveur fly ne renvoie pas `Access-Control-Allow-Origin`, l'appel échoue
-silencieusement et le numéro de version ne s'affiche pas (le téléchargement, lui,
-marche : ce sont de simples liens). Pour réactiver : ajouter le header CORS sur
-`/api/latest` côté serveur, ou lire `latest.json` depuis R2 (public).
+> Toujours la dernière version. Toutes les releases : [onglet Releases](https://github.com/fiveup-review/ecom-ai-builder/releases).
+
+> ℹ️ L'app n'est pas signée. Au premier lancement : sur Mac **clic-droit → Ouvrir**,
+> sur Windows **Informations complémentaires → Exécuter quand même**. C'est normal.
+
+## Démarrer
+
+1. Télécharge et installe l'app (ci-dessus).
+2. Rejoins le [Discord](https://whop.com/joined/ecom-ai-builder/) et connecte ton compte.
+3. Lance l'app, connecte tes accès, et démarre ton premier produit depuis Discord.
+
+---
+
+<div align="center">
+
+[ecom-ai-builder.com](https://ecom-ai-builder.com)
+
+</div>
