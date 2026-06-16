@@ -1530,10 +1530,10 @@
       }
     </script>
     <script>
-      // --- Meta Pixel : __META_PIXEL_ID__ est remplacé par le serveur (env META_PIXEL_ID).
-      // Sans ID configuré (local, dev), le pixel ne se charge pas du tout.
+      // --- Meta Pixel : colle ton pixel ID ci-dessous (ex. "123456789012345").
+      // Vide = le pixel ne se charge pas. ⚠️ Public côté client (pas un secret).
       (function () {
-        var PIXEL_ID = "__META_PIXEL_ID__";
+        var PIXEL_ID = "";
         if (!PIXEL_ID || PIXEL_ID.slice(0, 2) === "__") return;
         !(function (f, b, e, v, n, t, s) {
           if (f.fbq) return;
@@ -1563,10 +1563,10 @@
       })();
     </script>
     <script>
-      // --- TikTok Pixel : __TIKTOK_PIXEL_ID__ est remplacé par le serveur (env TIKTOK_PIXEL_ID).
-      // Sans ID configuré (local, dev), le pixel ne se charge pas du tout.
+      // --- TikTok Pixel : colle ton pixel ID ci-dessous. Vide = pas de pixel.
+      // ⚠️ Public côté client (pas un secret).
       (function () {
-        var PIXEL_ID = "__TIKTOK_PIXEL_ID__";
+        var PIXEL_ID = "";
         if (!PIXEL_ID || PIXEL_ID.slice(0, 2) === "__") return;
         !(function (w, d, t) {
           w.TiktokAnalyticsObject = t;
@@ -2156,7 +2156,7 @@
                 <small>.dmg · Apple Silicon</small>
               </div>
             </div>
-            <a class="btn btn-primary" href="__API_BASE__/download/mac" id="btn-mac"
+            <a class="btn btn-primary" href="https://ecom-ai-builder.fly.dev/download/mac" id="btn-mac"
               >Télécharger pour Mac</a
             >
             <div class="meta">
@@ -2173,7 +2173,7 @@
                 <small>.exe · installeur</small>
               </div>
             </div>
-            <a class="btn btn-primary" href="__API_BASE__/download/win" id="btn-win"
+            <a class="btn btn-primary" href="https://ecom-ai-builder.fly.dev/download/win" id="btn-win"
               >Télécharger pour Windows</a
             >
             <div class="meta">
@@ -2338,7 +2338,7 @@
       })();
 
       // --- Version depuis la prod (API sur le domaine du serveur fly) ---
-      fetch("__API_BASE__/api/latest")
+      fetch("https://ecom-ai-builder.fly.dev/api/latest")
         .then(function (r) {
           return r.json();
         })
