@@ -2351,25 +2351,26 @@
         })
         .catch(function () {});
 
-      // --- Pixels : la landing déclenche le DÉBUT de checkout au clic vers Whop.
-      // ⚠️ L'achat réel (Purchase) NE doit PAS être déclenché ici (sinon Meta
-      // compte un achat à chaque clic et optimise sur le clic, pas sur le payeur).
-      // Le Purchase doit venir de WHOP : Dashboard > Checkout > colle ton Pixel
-      // Meta + ton Pixel TikTok. Whop déclenche alors Purchase au vrai paiement.
+      // --- Pixels : la landing déclenche Purchase / CompletePayment au clic vers Whop.
+      // ⚠️ ATTENTION : l'event se déclenche au CLIC, pas au vrai paiement. Meta/TikTok
+      // comptent donc un "achat" à chaque clic vers Whop (même si la personne ne paie
+      // jamais) et optimisent sur le clic, pas sur le payeur réel. Les valeurs de ROAS
+      // seront gonflées. Pour un suivi fiable, le Purchase doit venir de WHOP :
+      // Dashboard > Checkout > colle ton Pixel Meta + ton Pixel TikTok.
       document
         .querySelectorAll('a[href^="https://whop.com/"]')
         .forEach(function (a) {
           a.addEventListener("click", function () {
             if (window.fbq)
-              fbq("track", "InitiateCheckout", {
+              fbq("track", "Purchase", {
                 content_name: "whop_join",
-                value: 39.99,
+                value: 19.99,
                 currency: "EUR",
               });
             if (window.ttq)
-              ttq.track("InitiateCheckout", {
+              ttq.track("CompletePayment", {
                 content_name: "whop_join",
-                value: 39.99,
+                value: 19.99,
                 currency: "EUR",
               });
           });
