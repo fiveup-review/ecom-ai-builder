@@ -8,7 +8,15 @@ const BIN = process.env.YTDLP_PATH ||
   path.join(__dirname, '..', 'bin', process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp');
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
-const COMMON = ['--no-warnings', '--no-playlist', '--no-check-certificates', '--user-agent', UA];
+// YouTube bloque les IP datacenter (« confirm you're not a bot »). Les clients
+// mobiles/TV de l'API interne YouTube passent souvent SANS cookies. N'affecte que
+// l'extracteur youtube ; TikTok/Reels l'ignorent. Si YouTube reste bloqué, seul
+// un fichier cookies (--cookies) ou un proxy résidentiel règle définitivement.
+const COMMON = [
+  '--no-warnings', '--no-playlist', '--no-check-certificates',
+  '--user-agent', UA,
+  '--extractor-args', 'youtube:player_client=android,tv,ios,web',
+];
 
 // Renvoie les métadonnées JSON de la vidéo
 export function ytdlpJson(url) {
