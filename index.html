@@ -30,6 +30,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
       referrerpolicy="no-referrer"
     />
+    <!-- Header de site PARTAGÉ (même source que les pages /outils). -->
+    <link rel="stylesheet" href="/assets/site-header.css" />
     <style>
       :root {
         --bg: #05070a;
@@ -1628,30 +1630,7 @@
     <div class="bg-fx"></div>
     <div class="bg-grid"></div>
 
-    <nav>
-      <div class="wrap nav-in">
-        <a class="brand" href="/"
-          ><img src="/icon.png?v=3" alt="" /> ECOM <b>AI</b> BUILDER</a
-        >
-        <div class="nav-links">
-          <a href="#features">Fonctionnalités</a>
-          <a href="#how">Comment ça marche</a>
-          <a href="#avis">Avis</a>
-          <a href="#equipe">L'équipe</a>
-          <a href="#faq">FAQ</a>
-          <a href="/outils">Outils</a>
-          <a href="#download">Télécharger</a>
-          <a
-            class="nav-cta"
-            href="https://whop.com/joined/ecom-ai-builder/"
-            target="_blank"
-            rel="noopener"
-          >
-            <i class="fa-solid fa-arrow-right"></i> Rejoindre maintenant
-          </a>
-        </div>
-      </div>
-    </nav>
+    <!-- Header injecté par /assets/site-header.js (source partagée avec /outils). -->
 
     <header class="hero">
       <div class="wrap">
@@ -2505,5 +2484,7 @@
         setInterval(tick, 1000);
       })();
     </script>
+    <!-- Header de site partagé (même JS que les pages /outils). -->
+    <script src="/assets/site-header.js"></script>
   </body>
 </html>

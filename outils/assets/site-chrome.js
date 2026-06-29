@@ -1,37 +1,15 @@
-// Chrome partagé des pages Outils = UNE seule source qui aligne les outils sur
-// la landing (site statique multi-fichiers : pas d'héritage natif du <head>/
-// <header> entre fichiers). Injecte : favicon identique à la landing + header de
-// la landing + lien retour vers le hub sur les pages détail.
+// Spécifique aux pages /outils : favicon (identique à la landing) + lien retour
+// vers le hub. Le HEADER, lui, vient de /assets/site-header.js (source PARTAGÉE
+// avec la landing) — ne plus le dupliquer ici.
 (function () {
-  // --- Favicon (identique à la landing, pas de favicon par page) -----------
+  // Favicon identique à la landing (pas de favicon par page).
   var fav = document.createElement("link");
   fav.rel = "icon";
   fav.type = "image/png";
   fav.href = "/icon.png?v=3";
   document.head.appendChild(fav);
 
-  // --- Header de la landing -------------------------------------------------
-  var nav = document.createElement("nav");
-  nav.className = "site-nav";
-  nav.innerHTML =
-    '<div class="site-nav-in">' +
-      '<a class="site-brand" href="/">' +
-        '<img src="/icon.png?v=3" alt="ECOM AI BUILDER">' +
-        '<span>ECOM <b>AI</b> BUILDER</span>' +
-      "</a>" +
-      '<div class="site-nav-links">' +
-        '<a href="/#features">Fonctionnalités</a>' +
-        '<a href="/#how">Comment ça marche</a>' +
-        '<a href="/#avis">Avis</a>' +
-        '<a href="/#download">Télécharger</a>' +
-        '<a href="/outils" class="is-active">Outils</a>' +
-        '<a class="site-nav-cta" href="https://whop.com/joined/ecom-ai-builder/" target="_blank" rel="noopener">Rejoindre &rarr;</a>' +
-      "</div>" +
-    "</div>";
-  document.body.insertBefore(nav, document.body.firstChild);
-  document.body.classList.add("has-site-nav");
-
-  // --- Lien retour vers le hub (pages détail uniquement, pas le hub) --------
+  // Lien retour vers le hub (pages détail uniquement, pas le hub lui-même).
   var isHub = /\/outils\/?(index(\.html)?)?$/.test(location.pathname);
   if (!isHub) {
     var back = document.createElement("a");
@@ -40,6 +18,5 @@
     back.innerHTML = "&larr; Retourner à la liste des outils";
     var wrap = document.querySelector(".wrap");
     if (wrap) wrap.insertBefore(back, wrap.firstChild);
-    else document.body.insertBefore(back, nav.nextSibling);
   }
 })();

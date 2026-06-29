@@ -1,0 +1,38 @@
+/* ===========================================================================
+   Header de site PARTAGÉ — source unique pour la landing ET les pages /outils.
+   Variables avec fallback : la landing utilise --ink/--neon/--line, les outils
+   --text/--accent/--border -> les deux vocabulaires marchent.
+   =========================================================================== */
+.site-nav {
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(12px);
+  background: rgba(5, 7, 10, .6);
+  border-bottom: 1px solid var(--line, var(--border, rgba(57, 255, 90, .14)));
+}
+.site-nav-in {
+  max-width: 1180px; margin: 0 auto; padding: 0 24px;
+  height: 64px; display: flex; align-items: center; gap: 18px;
+}
+.site-brand {
+  display: flex; align-items: center; gap: 11px;
+  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+  font-weight: 700; letter-spacing: .02em; font-size: .98rem;
+  color: var(--ink, var(--text, #eafff1));
+}
+.site-brand img {
+  width: 30px; height: 30px; border-radius: 8px;
+  box-shadow: 0 0 14px rgba(57, 255, 90, .45);
+}
+.site-brand b { color: var(--neon, var(--accent, #39ff5a)); }
+.site-nav-links { margin-left: auto; display: flex; align-items: center; gap: 22px; }
+.site-nav-links a { color: var(--muted, #93a89c); font-size: .9rem; font-weight: 500; transition: color .2s; }
+.site-nav-links a:hover { color: var(--ink, var(--text, #eafff1)); }
+.site-nav-links a.is-active { color: var(--neon, var(--accent, #39ff5a)); }
+.site-nav-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px; border-radius: 999px; font-weight: 700; font-size: .88rem;
+  background: var(--neon, var(--accent, #39ff5a)); color: #042a10 !important;
+  box-shadow: 0 0 0 1px var(--neon, var(--accent, #39ff5a)), 0 8px 26px -8px rgba(57, 255, 90, .6);
+}
+.site-nav-cta:hover { transform: translateY(-1px); }
+@media (max-width: 820px) { .site-nav-links a:not(.site-nav-cta) { display: none; } }

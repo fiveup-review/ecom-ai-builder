@@ -255,43 +255,11 @@ input[type="range"]::-webkit-slider-thumb {
 .mt-0 { margin-top: 0; }
 .hidden { display: none !important; }
 
-/* ===== Header de site partagé (injecté par site-chrome.js) ================= */
-/* Réplique la nav de la landing pour que les outils fassent partie du site.  */
-.site-nav {
-  position: sticky; top: 0; z-index: 100;
-  backdrop-filter: blur(12px);
-  background: rgba(5, 7, 10, .6);
-  border-bottom: 1px solid var(--border);
-}
-.site-nav-in {
-  max-width: 1080px; margin: 0 auto; padding: 0 20px;
-  height: 64px; display: flex; align-items: center; gap: 18px;
-}
-.site-brand {
-  display: flex; align-items: center; gap: 11px;
-  font-family: var(--font-display); font-weight: 700;
-  letter-spacing: .02em; font-size: .98rem; color: var(--text);
-}
-.site-brand img {
-  width: 30px; height: 30px; border-radius: 8px;
-  box-shadow: 0 0 14px rgba(57, 255, 90, .45);
-}
-.site-brand b { color: var(--accent); }
-.site-nav-links { margin-left: auto; display: flex; align-items: center; gap: 22px; }
-.site-nav-links a { color: var(--muted); font-size: .9rem; font-weight: 500; transition: color .2s; }
-.site-nav-links a:hover { color: var(--text); }
-.site-nav-links a.is-active { color: var(--accent); }
-.site-nav-cta {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 9px 18px; border-radius: 999px; font-weight: 700; font-size: .88rem;
-  background: var(--accent); color: var(--accent-ink) !important;
-  box-shadow: 0 0 0 1px var(--accent), 0 8px 26px -8px rgba(57, 255, 90, .6);
-}
-.site-nav-cta:hover { transform: translateY(-1px); }
-/* La page n'affiche plus son propre wordmark : le header global le porte. */
-.has-site-nav .brand { display: none; }
+/* Le header de site (.site-nav…) est désormais dans /assets/site-header.css,
+   PARTAGÉ avec la landing. Ici on garde juste les ajustements propres aux pages
+   outils quand ce header est présent. */
+.has-site-nav .brand { display: none; }  /* le header global porte le wordmark */
 .has-site-nav .wrap { padding-top: 30px; }
-@media (max-width: 760px) { .site-nav-links a:not(.site-nav-cta) { display: none; } }
 
 /* Lien retour vers le hub (injecté sur les pages détail par site-chrome.js). */
 .site-back {

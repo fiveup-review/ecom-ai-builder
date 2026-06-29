@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <base href="/outils/">
+<link rel="stylesheet" href="/assets/site-header.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vidéo en GIF — ECOM AI BUILDER</title>
 <meta name="description" content="Convertissez vos vidéos en GIF animé directement dans le navigateur. Choisissez le segment, le fps et la taille. Gratuit, sans upload.">
@@ -138,6 +139,7 @@ $('make').addEventListener('click',async()=>{
 $('dl').addEventListener('click',()=>{if(!gifBlob)return;const a=document.createElement('a');a.href=URL.createObjectURL(gifBlob);a.download='animation.gif';a.click();});
 function reset(){gifBlob=null;$('file').value='';$('editor').classList.add('hidden');$('result').classList.add('hidden');$('dropCard').classList.remove('hidden');}
 </script>
+<script src="/assets/site-header.js"></script>
 <script src="assets/site-chrome.js"></script>
 </body>
 </html>
