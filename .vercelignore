@@ -1,0 +1,2 @@
+# Backend Express des outils (déployé séparément sur Render/Docker, pas sur Vercel)
+outils-backend/

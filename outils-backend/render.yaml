@@ -1,0 +1,12 @@
+# Déploiement 1-clic sur Render (https://render.com)
+# → New + > Blueprint > connecte le repo. Render lit ce fichier et déploie tout seul.
+services:
+  - type: web
+    name: ecom-ai-builder-tools-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter        # le plan free s'endort après inactivité ; "starter" reste chaud
+    healthCheckPath: /
+    envVars:
+      - key: ALLOWED_ORIGINS
+        value: "*"        # remplace par tes domaines, ex: "https://tools.ecom-ai-builder.com"
