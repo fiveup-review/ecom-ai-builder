@@ -292,3 +292,11 @@ input[type="range"]::-webkit-slider-thumb {
 .has-site-nav .brand { display: none; }
 .has-site-nav .wrap { padding-top: 30px; }
 @media (max-width: 760px) { .site-nav-links a:not(.site-nav-cta) { display: none; } }
+
+/* Lien retour vers le hub (injecté sur les pages détail par site-chrome.js). */
+.site-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-bottom: 22px; font-size: .88rem; font-weight: 600;
+  color: var(--muted); transition: color .2s, gap .2s;
+}
+.site-back:hover { color: var(--accent); gap: 9px; }
