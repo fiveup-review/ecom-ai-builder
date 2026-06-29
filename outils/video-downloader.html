@@ -88,7 +88,7 @@ async function fetchVideo(){
   $('out').innerHTML=`<div class="card center"><span class="spin"></span> &nbsp;Récupération en cours…</div>`;
   try{
     const r=await fetch(API_BASE+'/api/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url,platform})});
-    const data=await r.json();
+    const data=await r.json().catch(()=>{throw new Error("Service indisponible — le backend des outils n'est pas encore déployé.");});
     if(!r.ok) throw new Error(data.error||'Erreur');
     renderResult(data);
   }catch(e){ $('out').innerHTML=notice("❌ "+e.message); }
@@ -127,5 +127,6 @@ async function downloadFile(btn){
 }
 function notice(msg){return `<div class="notice">${msg}</div>`;}
 </script>
+<script src="assets/site-chrome.js"></script>
 </body>
 </html>

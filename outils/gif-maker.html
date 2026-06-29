@@ -138,5 +138,6 @@ $('make').addEventListener('click',async()=>{
 $('dl').addEventListener('click',()=>{if(!gifBlob)return;const a=document.createElement('a');a.href=URL.createObjectURL(gifBlob);a.download='animation.gif';a.click();});
 function reset(){gifBlob=null;$('file').value='';$('editor').classList.add('hidden');$('result').classList.add('hidden');$('dropCard').classList.remove('hidden');}
 </script>
+<script src="assets/site-chrome.js"></script>
 </body>
 </html>
