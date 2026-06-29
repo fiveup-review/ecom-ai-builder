@@ -2,6 +2,17 @@
 // /outils (site statique sans build : pas d'include natif entre fichiers HTML).
 // Modifier le header = modifier CE fichier, point.
 (function () {
+  // Mode « embed » = chargé dans l'iframe de l'app desktop (?embed=1). On NE met
+  // PAS le header de site (l'app a déjà sa nav). Mémorisé en sessionStorage pour
+  // survivre à la navigation interne de l'iframe (les liens outils n'ont pas le
+  // param). Isolé à ce contexte de navigation (l'iframe) -> n'affecte pas le
+  // navigateur normal.
+  var isEmbedParam = /[?&](embed|app)=1\b/.test(location.search);
+  if (isEmbedParam) { try { sessionStorage.setItem("eab_embed", "1"); } catch (e) {} }
+  var embed = isEmbedParam;
+  try { if (sessionStorage.getItem("eab_embed") === "1") embed = true; } catch (e) {}
+  if (embed) { document.body.classList.add("embed"); return; }
+
   var onOutils = /^\/outils(\/|$)/.test(location.pathname);
   var nav = document.createElement("nav");
   nav.className = "site-nav";

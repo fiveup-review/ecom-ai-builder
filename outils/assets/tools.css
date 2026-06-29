@@ -258,8 +258,15 @@ input[type="range"]::-webkit-slider-thumb {
 /* Le header de site (.site-nav…) est désormais dans /assets/site-header.css,
    PARTAGÉ avec la landing. Ici on garde juste les ajustements propres aux pages
    outils quand ce header est présent. */
-.has-site-nav .brand { display: none; }  /* le header global porte le wordmark */
+.has-site-nav .brand,
+body.embed .brand { display: none; }     /* wordmark per-page : header/app le porte */
 .has-site-nav .wrap { padding-top: 30px; }
+
+/* Mode embed (iframe app desktop) : pas de header de site (cf. site-header.js) ni
+   de CTA « Découvrir / Rejoindre » -> l'app a déjà sa nav et l'utilisateur est
+   déjà dedans. Rendu plein écran, ne ressemble plus à un iframe. */
+body.embed .cta-foot { display: none; }
+body.embed .wrap { padding-top: 28px; }
 
 /* Lien retour vers le hub (injecté sur les pages détail par site-chrome.js). */
 .site-back {
