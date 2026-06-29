@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur de coût d'abandon de panier — ECOM AI BUILDER</title>
+<meta name="description" content="Découvrez combien vous coûtent les paniers abandonnés chaque mois et combien vous pourriez récupérer. Gratuit.">
+<link rel="stylesheet" href="assets/tools.css">
+</head>
+<body>
+<main class="wrap">
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+  <header class="tool-head">
+    <span class="eyebrow">📉 Conversion</span>
+    <h1>Coût d'<span class="accent">abandon de panier</span></h1>
+    <p class="sub">En moyenne 70% des paniers sont abandonnés. Découvre combien ça te coûte vraiment chaque mois, et combien tu peux récupérer.</p>
+  </header>
+
+  <div class="card">
+    <p class="card-title">Ton trafic</p>
+    <div class="grid-2">
+      <div class="field"><label>Visiteurs / mois</label><div class="input-group has-right"><input type="number" id="visit" value="20000" step="100"><span class="affix right">👤</span></div></div>
+      <div class="field"><label>Taux d'ajout au panier</label><div class="input-group has-right"><input type="number" id="add" value="8" step="0.1"><span class="affix right">%</span></div></div>
+      <div class="field"><label>Taux d'abandon panier</label><div class="input-group has-right"><input type="number" id="aband" value="70" step="0.1"><span class="affix right">%</span></div></div>
+      <div class="field"><label>Panier moyen <span class="hint">AOV</span></label><div class="input-group has-right"><input type="number" id="aov" value="48" step="0.01"><span class="affix right">€</span></div></div>
+    </div>
+    <div class="field" style="margin-top:4px"><label>Taux de récupération visé <span class="hint" id="recl">10 %</span> <span class="hint">relances email/SMS</span></label><input type="range" id="rec" min="0" max="30" step="1" value="10"></div>
+  </div>
+
+  <div class="result" style="margin-top:18px">
+    <p class="result-label">CA perdu chaque mois</p>
+    <p class="result-big danger" id="lost">—</p>
+    <span class="pill bad" id="year">—</span>
+    <div class="breakdown">
+      <div class="row"><span>Paniers créés / mois</span><b id="carts">—</b></div>
+      <div class="row"><span>Paniers abandonnés / mois</span><b id="abandoned">—</b></div>
+      <div class="row total"><span>💰 Récupérable avec relances</span><b id="recover">—</b></div>
+    </div>
+    <p class="note">Une séquence de relance (email + SMS) récupère typiquement 5 à 15% des paniers abandonnés. C'est souvent le ROI le plus rapide en e-commerce.</p>
+  </div>
+
+  <div class="cta-foot">
+    <p>Récupère tes paniers automatiquement avec une boutique optimisée.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const eur=n=>(isFinite(n)?Math.round(n).toLocaleString('fr-FR'):'0')+' €';
+function calc(){
+  const v=+$('visit').value||0, add=+$('add').value||0, ab=+$('aband').value||0, aov=+$('aov').value||0, rec=+$('rec').value||0;
+  $('recl').textContent=rec+' %';
+  const carts=v*(add/100);
+  const abandoned=carts*(ab/100);
+  const lost=abandoned*aov;
+  const recover=lost*(rec/100);
+  $('carts').textContent=Math.round(carts).toLocaleString('fr-FR');
+  $('abandoned').textContent=Math.round(abandoned).toLocaleString('fr-FR');
+  $('lost').textContent=eur(lost);
+  $('year').textContent='Soit '+eur(lost*12)+' / an';
+  $('recover').textContent='+ '+eur(recover)+' / mois';
+}
+['visit','add','aband','aov','rec'].forEach(id=>$(id).addEventListener('input',calc));
+calc();
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Téléchargeur d'images d'un site — ECOM AI BUILDER</title>
+<meta name="description" content="Extrayez et téléchargez toutes les images d'une page produit ou d'un site e-commerce en un clic. Gratuit.">
+<link rel="stylesheet" href="assets/tools.css">
+<style>
+  .grid-img { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px; }
+  .imgcell { position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; border:1px solid var(--border); background:#06090d; cursor:pointer; }
+  .imgcell img { width:100%; height:100%; object-fit:cover; }
+  .imgcell.sel { outline:2px solid var(--accent); outline-offset:-2px; }
+  .imgcell .chk { position:absolute; top:6px; right:6px; width:20px; height:20px; border-radius:6px;
+    background:var(--bg); border:1px solid var(--border); display:grid; place-items:center; font-size:12px; color:var(--accent); }
+  .imgcell.sel .chk { background:var(--accent); color:var(--accent-ink); }
+  .notice { background:rgba(255,181,71,.08); border:1px solid rgba(255,181,71,.25); border-radius:var(--radius-sm);
+    padding:14px 16px; font-size:13px; color:var(--warn); }
+  .spin { display:inline-block; width:16px; height:16px; border:2px solid rgba(57,255,90,.3); border-top-color:var(--accent);
+    border-radius:50%; animation:sp .7s linear infinite; vertical-align:-3px; }
+  @keyframes sp { to { transform:rotate(360deg); } }
+  .bartop { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+</style>
+</head>
+<body>
+<main class="wrap wrap--wide">
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+  <header class="tool-head">
+    <span class="eyebrow">🖼 Recherche produit</span>
+    <h1>Téléchargeur d'<span class="accent">images d'un site</span></h1>
+    <p class="sub">Un site dont le design te plaît ? Récupère toutes ses images en un clic pour t'en inspirer et bâtir une boutique qui convertit.</p>
+  </header>
+
+  <div class="card">
+    <div class="field">
+      <label>URL de la page <span class="hint">fiche produit, collection, site…</span></label>
+      <input type="text" id="url" placeholder="https://exemple-concurrent.com/products/...">
+    </div>
+    <button class="btn btn-primary" id="go">🔍 Extraire les images</button>
+  </div>
+
+  <div id="out" style="margin-top:18px"></div>
+
+  <div class="cta-foot">
+    <p>Inspire-toi des meilleurs et crée une boutique qui les surpasse.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+</main>
+<script>
+/* =====================================================================
+   ⚙ BACKEND REQUIS (CORS → le navigateur ne peut pas lire un autre domaine).
+   Renseigne l'URL de ton API ci-dessous. Contrat attendu :
+     POST {API_BASE}/api/images   body: { url }
+     → 200 { images: [ { src, alt, width, height } ] }
+     POST {API_BASE}/api/zip  body: { srcs:[...] } → un .zip des images
+   ✅ Le backend sert aussi cette page → même origine, fetch relatif, zéro CORS.
+   Ouvre la page via http://localhost:8787/image-scraper.html (PAS en double-clic file://).
+   ===================================================================== */
+const API_BASE = ""; // même origine ; en prod si l'API est sur un autre domaine : "https://xxx.onrender.com"
+
+const $=id=>document.getElementById(id);
+let images=[], selected=new Set();
+
+$('go').addEventListener('click',scan);
+$('url').addEventListener('keydown',e=>{if(e.key==='Enter')scan();});
+
+async function scan(){
+  const url=$('url').value.trim();
+  if(!url){$('out').innerHTML=notice("Colle d'abord l'URL d'une page.");return;}
+  $('out').innerHTML=`<div class="card center"><span class="spin"></span> &nbsp;Analyse de la page…</div>`;
+  try{
+    const r=await fetch(API_BASE+'/api/images',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+    const data=await r.json();
+    if(!r.ok) throw new Error(data.error||'Erreur');
+    images=data.images||[]; selected=new Set(images.map((_,i)=>i));
+    renderGallery();
+  }catch(e){ $('out').innerHTML=notice("❌ "+e.message); }
+}
+
+function renderGallery(){
+  if(!images.length){$('out').innerHTML=notice("Aucune image trouvée sur cette page.");return;}
+  const cells=images.map((im,i)=>
+    `<div class="imgcell sel" data-i="${i}"><img src="${im.src}" alt="" loading="lazy"><span class="chk">✓</span></div>`
+  ).join('');
+  $('out').innerHTML=`<div class="card">
+    <div class="bartop">
+      <span class="muted"><b id="cnt">${images.length}</b> image(s) · <span id="selcnt">${selected.size}</span> sélectionnée(s)</span>
+      <button class="btn btn-ghost auto" id="all" style="padding:8px 14px;font-size:13px">Tout / rien</button>
+    </div>
+    <div class="grid-img">${cells}</div>
+    <button class="btn btn-primary" style="margin-top:18px" id="dlall">⬇ Télécharger la sélection</button>
+  </div>`;
+  document.querySelectorAll('.imgcell').forEach(c=>c.addEventListener('click',()=>{
+    const i=+c.dataset.i; if(selected.has(i)){selected.delete(i);c.classList.remove('sel');}else{selected.add(i);c.classList.add('sel');}
+    $('selcnt').textContent=selected.size;
+  }));
+  $('all').addEventListener('click',()=>{
+    const on=selected.size<images.length; selected=on?new Set(images.map((_,i)=>i)):new Set();
+    document.querySelectorAll('.imgcell').forEach(c=>c.classList.toggle('sel',selected.has(+c.dataset.i)));
+    $('selcnt').textContent=selected.size;
+  });
+  $('dlall').addEventListener('click',downloadSelected);
+}
+
+async function downloadSelected(){
+  const srcs=[...selected].map(i=>images[i].src);
+  if(!srcs.length)return;
+  const btn=$('dlall');const old=btn.textContent;btn.disabled=true;btn.textContent='📦 Préparation du ZIP…';
+  try{
+    const r=await fetch(API_BASE+'/api/zip',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({srcs})});
+    if(!r.ok)throw new Error('zip');
+    const blob=await r.blob();
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='images.zip';a.click();
+  }catch(e){
+    // fallback : téléchargement individuel
+    srcs.forEach((src,k)=>setTimeout(()=>{const a=document.createElement('a');a.href=src;a.download='img-'+(k+1);a.target='_blank';a.click();},k*250));
+  }finally{btn.disabled=false;btn.textContent=old;}
+}
+function notice(msg){return `<div class="notice">${msg}</div>`;}
+</script>
+</body>
+</html>

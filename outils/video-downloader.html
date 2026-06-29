@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Téléchargeur de vidéos TikTok, Reels & YouTube — ECOM AI BUILDER</title>
+<meta name="description" content="Téléchargez des vidéos TikTok (sans filigrane), Reels Instagram et YouTube/Shorts pour analyser les créas gagnantes. Gratuit.">
+<link rel="stylesheet" href="assets/tools.css">
+<style>
+  .tabs { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+  .tabs button { width:auto; font-size:14px; padding:10px 18px; border-radius:999px;
+    background:var(--card-2); color:var(--muted); border:1px solid var(--border); cursor:pointer; font-family:var(--font); display:flex; gap:7px; align-items:center; }
+  .tabs button.on { color:var(--accent-ink); background:linear-gradient(135deg,var(--accent),var(--accent-2)); border-color:transparent; font-weight:600; }
+  .res { display:grid; grid-template-columns:160px 1fr; gap:18px; }
+  @media (max-width:560px){ .res{ grid-template-columns:1fr; } }
+  .res .thumb { aspect-ratio:9/16; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:#06090d; }
+  .res .thumb img { width:100%; height:100%; object-fit:cover; }
+  .dls { display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+  .notice { background:rgba(255,181,71,.08); border:1px solid rgba(255,181,71,.25); border-radius:var(--radius-sm);
+    padding:14px 16px; font-size:13px; color:var(--warn); }
+  .spin { display:inline-block; width:16px; height:16px; border:2px solid rgba(57,255,90,.3); border-top-color:var(--accent);
+    border-radius:50%; animation:sp .7s linear infinite; vertical-align:-3px; }
+  @keyframes sp { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+  <header class="tool-head">
+    <span class="eyebrow">⬇ Recherche produit</span>
+    <h1>Téléchargeur de <span class="accent">vidéos</span></h1>
+    <p class="sub">Sans filigrane. Vite. Tous les dispositifs.</p>
+  </header>
+
+  <div class="card">
+    <div class="tabs" id="tabs">
+      <button class="on" data-p="tiktok">🎵 TikTok</button>
+      <button data-p="instagram">📸 Reels Insta</button>
+      <button data-p="youtube">▶️ YouTube / Shorts</button>
+    </div>
+    <div class="field">
+      <label>Lien de la vidéo <span class="hint" id="hint">colle l'URL TikTok</span></label>
+      <input type="text" id="url" placeholder="https://www.tiktok.com/@...">
+    </div>
+    <button class="btn btn-primary" id="go">⬇ Récupérer la vidéo</button>
+    <p class="note" id="caveat" style="display:none"></p>
+  </div>
+
+  <div id="out" style="margin-top:18px"></div>
+
+  <div class="cta-foot">
+    <p>Analyse, inspire-toi, et construis mieux que tes concurrents.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+</main>
+<script>
+/* =====================================================================
+   ⚙ BACKEND REQUIS (CORS + protections plateformes → impossible en pur front)
+   Renseigne l'URL de ton API ci-dessous. Contrat attendu :
+     POST {API_BASE}/api/download   body: { url, platform }
+     → 200 { title, author, thumbnail, formats:[ { label, quality, ext, url } ] }
+     → 4xx { error: "message" }
+   ✅ Le backend sert aussi cette page → même origine, fetch relatif, zéro CORS.
+   Ouvre la page via http://localhost:8787/video-downloader.html (PAS en double-clic file://).
+   ===================================================================== */
+const API_BASE = ""; // même origine ; en prod si l'API est sur un autre domaine : "https://xxx.onrender.com"
+
+const $=id=>document.getElementById(id);
+let platform='tiktok';
+const HINTS={tiktok:"colle l'URL TikTok",instagram:"colle l'URL du Reel Instagram",youtube:"colle l'URL YouTube ou Shorts"};
+const PH={tiktok:"https://www.tiktok.com/@...",instagram:"https://www.instagram.com/reel/...",youtube:"https://youtube.com/shorts/..."};
+
+const CAVEAT={instagram:"ℹ️ Instagram limite les vidéos privées/sensibles aux comptes connectés. Les Reels publics fonctionnent ; sinon le dev peut ajouter des cookies côté serveur (voir DEV-NOTES)."};
+function setCaveat(){const c=$('caveat');if(CAVEAT[platform]){c.style.display='block';c.textContent=CAVEAT[platform];}else{c.style.display='none';}}
+document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>{
+  platform=b.dataset.p;
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  $('hint').textContent=HINTS[platform];$('url').placeholder=PH[platform];$('out').innerHTML='';setCaveat();
+}));
+
+$('go').addEventListener('click',fetchVideo);
+$('url').addEventListener('keydown',e=>{if(e.key==='Enter')fetchVideo();});
+
+async function fetchVideo(){
+  const url=$('url').value.trim();
+  if(!url){$('out').innerHTML=notice("Colle d'abord un lien de vidéo.");return;}
+  $('out').innerHTML=`<div class="card center"><span class="spin"></span> &nbsp;Récupération en cours…</div>`;
+  try{
+    const r=await fetch(API_BASE+'/api/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url,platform})});
+    const data=await r.json();
+    if(!r.ok) throw new Error(data.error||'Erreur');
+    renderResult(data);
+  }catch(e){ $('out').innerHTML=notice("❌ "+e.message); }
+}
+
+function renderResult(d){
+  const safe=(d.title||'video').replace(/[^a-z0-9]+/gi,'_').slice(0,40)||'video';
+  const dls=(d.formats||[]).map(f=>
+    `<button class="btn btn-primary dlbtn" data-url="${f.url}" data-name="${safe}">⬇ ${f.label||f.quality||'Télécharger'} ${f.ext?'('+f.ext+')':''}</button>`
+  ).join('');
+  $('out').innerHTML=`<div class="card"><div class="res">
+    <div class="thumb">${d.thumbnail?`<img src="${d.thumbnail}" alt="">`:''}</div>
+    <div>
+      <h3 style="margin:0 0 4px;font-family:var(--font-display)">${d.title||'Vidéo'}</h3>
+      <p class="muted" style="margin:0 0 6px">${d.author||''}</p>
+      <div class="dls">${dls||notice('Aucun format renvoyé par l’API.')}</div>
+      <p class="note" style="margin-top:10px">Le téléchargement prend quelques secondes (la vidéo est récupérée et nettoyée du filigrane côté serveur).</p>
+    </div></div></div>`;
+  document.querySelectorAll('.dlbtn').forEach(b=>b.addEventListener('click',()=>downloadFile(b)));
+}
+
+async function downloadFile(btn){
+  const url=btn.dataset.url, name=(btn.dataset.name||'video')+'.mp4';
+  const old=btn.innerHTML; btn.disabled=true; btn.innerHTML='⏳ Téléchargement…';
+  try{
+    const r=await fetch(url);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const blob=await r.blob();
+    if(blob.size<1000) throw new Error('fichier vide');
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+    btn.innerHTML='✅ Téléchargé !'; setTimeout(()=>{btn.innerHTML=old;btn.disabled=false;},2200);
+  }catch(e){
+    btn.innerHTML='❌ Réessaie'; setTimeout(()=>{btn.innerHTML=old;btn.disabled=false;},2800);
+  }
+}
+function notice(msg){return `<div class="notice">${msg}</div>`;}
+</script>
+</body>
+</html>

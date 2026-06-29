@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur de Favicon — ECOM AI BUILDER</title>
+<meta name="description" content="Créez un favicon pour votre boutique à partir d'initiales, d'un emoji ou d'une image. Téléchargement PNG multi-tailles. Gratuit.">
+<link rel="stylesheet" href="assets/tools.css">
+<style>
+  .tabs { display:flex; gap:8px; margin-bottom:18px; }
+  .tabs button { width:auto; font-size:13px; padding:9px 16px; border-radius:999px;
+    background:var(--card-2); color:var(--muted); border:1px solid var(--border); cursor:pointer; font-family:var(--font); }
+  .tabs button.on { color:var(--accent-ink); background:linear-gradient(135deg,var(--accent),var(--accent-2)); border-color:transparent; font-weight:600; }
+  .previews { display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap; justify-content:center; padding:24px;
+    background:var(--inset); border:1px solid var(--border); border-radius:var(--radius); }
+  .pv { text-align:center; }
+  .pv canvas { border-radius:8px; image-rendering:auto; }
+  .pv span { display:block; font-family:var(--font-mono); font-size:11px; color:var(--muted-2); margin-top:7px; }
+  .swatch input[type=color]{ width:46px; height:40px; padding:3px; cursor:pointer; }
+  .tabwrap { display:none; } .tabwrap.on { display:block; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+  <header class="tool-head">
+    <span class="eyebrow">🖼 Média</span>
+    <h1>Générateur de <span class="accent">Favicon</span></h1>
+    <p class="sub">Le petit logo de ton onglet navigateur, en 1 minute. À partir d'initiales, d'un emoji ou d'une image, en plusieurs tailles, prêt à uploader.</p>
+  </header>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="on" data-tab="txt" onclick="tab('txt')">Texte / Emoji</button>
+      <button data-tab="img" onclick="tab('img')">Image</button>
+    </div>
+
+    <div class="tabwrap on" id="tab-txt">
+      <div class="grid-2">
+        <div class="field"><label>Initiales ou emoji <span class="hint">1-3 car.</span></label><input type="text" id="txt" maxlength="3" value="M"></div>
+        <div class="field"><label>Forme</label>
+          <select id="shape"><option value="round">Arrondi</option><option value="circle">Cercle</option><option value="square">Carré</option></select>
+        </div>
+      </div>
+      <div class="grid-3" style="margin-top:4px">
+        <div class="field"><label>Texte</label><div class="swatch"><input type="color" id="fg" value="#05070a"></div></div>
+        <div class="field"><label>Fond</label><div class="swatch"><input type="color" id="bg" value="#39ff5a"></div></div>
+        <div class="field"><label>Gras</label>
+          <select id="weight"><option value="800">Extra-bold</option><option value="600">Semi-bold</option><option value="400">Regular</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabwrap" id="tab-img">
+      <input type="file" id="file" accept="image/*" class="hidden">
+      <button class="btn btn-ghost" onclick="document.getElementById('file').click()">📁 Choisir une image</button>
+      <p class="note">L'image est recadrée au centre en carré. Aucun upload, tout se fait dans ton navigateur.</p>
+    </div>
+  </div>
+
+  <div class="previews" style="margin-top:18px">
+    <div class="pv"><canvas id="c180" width="180" height="180" style="width:96px;height:96px"></canvas><span>180×180</span></div>
+    <div class="pv"><canvas id="c64" width="64" height="64" style="width:64px;height:64px"></canvas><span>64×64</span></div>
+    <div class="pv"><canvas id="c32" width="32" height="32" style="width:32px;height:32px"></canvas><span>32×32</span></div>
+    <div class="pv"><canvas id="c16" width="16" height="16" style="width:16px;height:16px"></canvas><span>16×16</span></div>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px">
+    <button class="btn btn-ghost" id="dl32">⬇ PNG 32px</button>
+    <button class="btn btn-primary" id="dl512">⬇ PNG 512px (apple-touch)</button>
+  </div>
+  <p class="note">Pour le .ico : upload le PNG 32px sur ton thème, ou convertis-le. La plupart des CMS acceptent un PNG comme favicon.</p>
+
+  <div class="cta-foot">
+    <p>Logo, favicon, identité complète : générés pour ta marque par ECOM AI BUILDER.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let mode='txt', userImg=null;
+const sizes=[180,64,32,16];
+
+function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+
+function draw(canvas){
+  const s=canvas.width, c=canvas.getContext('2d');
+  c.clearRect(0,0,s,s);
+  if(mode==='img'&&userImg){
+    const m=Math.min(userImg.width,userImg.height);
+    const sx=(userImg.width-m)/2, sy=(userImg.height-m)/2;
+    const shape=$('shape')? $('shape').value:'round';
+    c.save();
+    roundRect(c,0,0,s,s,s*0.18);c.clip();
+    c.drawImage(userImg,sx,sy,m,m,0,0,s,s);
+    c.restore();
+    return;
+  }
+  const bg=$('bg').value, fg=$('fg').value, shape=$('shape').value, w=$('weight').value, t=$('txt').value||'M';
+  c.fillStyle=bg;
+  if(shape==='circle'){c.beginPath();c.arc(s/2,s/2,s/2,0,7);c.fill();}
+  else if(shape==='square'){c.fillRect(0,0,s,s);}
+  else{roundRect(c,0,0,s,s,s*0.22);c.fill();}
+  c.fillStyle=fg;
+  c.textAlign='center';c.textBaseline='middle';
+  const fs=t.length>=3?s*0.42:t.length===2?s*0.52:s*0.62;
+  c.font=`${w} ${fs}px "Space Grotesk", Inter, sans-serif`;
+  c.fillText(t,s/2,s/2+s*0.04);
+}
+function renderAll(){ sizes.forEach(sz=>draw($('c'+sz))); }
+
+function download(size){
+  const cv=document.createElement('canvas');cv.width=size;cv.height=size;
+  draw(cv);
+  const a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download='favicon-'+size+'.png';a.click();
+}
+$('dl32').addEventListener('click',()=>download(32));
+$('dl512').addEventListener('click',()=>download(512));
+
+['txt','shape','fg','bg','weight'].forEach(id=>$(id).addEventListener('input',renderAll));
+$('file').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=ev=>{const im=new Image();im.onload=()=>{userImg=im;renderAll();};im.src=ev.target.result;};r.readAsDataURL(f);
+});
+function tab(t){mode=t;document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  document.querySelectorAll('.tabwrap').forEach(w=>w.classList.toggle('on',w.id==='tab-'+t));renderAll();}
+// Police chargée → re-render pour un rendu net
+document.fonts && document.fonts.ready.then(renderAll);
+renderAll();
+</script>
+</body>
+</html>

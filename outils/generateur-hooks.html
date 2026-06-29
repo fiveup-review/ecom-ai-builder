@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur de Hooks — ECOM AI BUILDER</title>
+<meta name="description" content="Générez des accroches (hooks) qui stoppent le scroll pour vos pubs TikTok, Meta et UGC. Gratuit.">
+<link rel="stylesheet" href="assets/tools.css">
+<style>
+  .hook { display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+    background:var(--inset); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:14px 16px; margin-bottom:10px; }
+  .hook p { margin:0; font-size:15px; line-height:1.4; }
+  .hook .tag { font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.4px;
+    color:var(--accent); background:rgba(57,255,90,.1); padding:2px 7px; border-radius:5px; display:inline-block; margin-bottom:7px; }
+  .hook .cp { flex:0 0 auto; cursor:pointer; color:var(--muted); font-size:14px; background:none; border:0; padding:4px 6px; width:auto; }
+  .hook .cp:hover { color:var(--accent); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+  <header class="tool-head">
+    <span class="eyebrow">✍️ Contenu</span>
+    <h1>Générateur de <span class="accent">Hooks</span></h1>
+    <p class="sub">Les 3 premières secondes décident de tout. Génère des accroches qui stoppent le scroll pour tes pubs TikTok, Meta et UGC.</p>
+  </header>
+
+  <div class="card">
+    <div class="grid-2">
+      <div class="field"><label>Produit</label><input type="text" id="prod" value="veilleuse galaxie"></div>
+      <div class="field"><label>Bénéfice clé <span class="hint">le résultat</span></label><input type="text" id="benef" value="s'endormir en 5 min"></div>
+    </div>
+    <div class="field" style="margin-top:16px"><label>Cible <span class="hint">optionnel</span></label><input type="text" id="cible" value="jeunes parents"></div>
+    <button class="btn btn-primary" style="margin-top:18px" id="gen">⚡ Générer 8 hooks</button>
+  </div>
+
+  <div id="list" style="margin-top:18px"></div>
+
+  <div class="cta-foot">
+    <p>Des angles et créas publicitaires générés par IA pour ta marque.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+// {p}=produit {b}=bénéfice {c}=cible
+const T=[
+  ['Curiosité',"POV : tu découvres {p} et tu te demandes comment t'as fait sans avant 😳"],
+  ['Curiosité',"Personne ne parle de ÇA à propos de {p}…"],
+  ['Problème',"Si tu galères à {b}, regarde ça avant de scroller."],
+  ['Problème',"J'ai testé 5 méthodes pour {b}. Une seule a marché."],
+  ['Preuve sociale',"{c} : voici pourquoi tout le monde s'arrache {p} en ce moment."],
+  ['Preuve sociale',"3 247 personnes utilisent déjà {p} pour {b}."],
+  ['Avant/Après',"Avant {p} vs après : la différence est gênante."],
+  ['Avant/Après',"Comment je suis passé de galérer à {b}… à le faire les yeux fermés."],
+  ['Urgence',"Arrête de scroller si tu veux enfin {b}."],
+  ['Urgence',"Tu fais sûrement cette erreur si tu veux {b}."],
+  ['Storytime',"Storytime : comment {p} a changé mon quotidien de {c}."],
+  ['Chiffre',"Le seul achat à moins de 50€ qui m'a permis de {b}."],
+  ['Question',"Pourquoi personne ne t'a parlé de {p} plus tôt ?"],
+  ['Démo',"Regarde ce que {p} fait en 10 secondes. 👀"],
+  ['Objection',"« C'est trop beau pour être vrai » — j'ai pensé pareil sur {p}."],
+  ['Contre-intuitif',"Oublie tout ce qu'on t'a dit pour {b}. Fais juste ça."]
+];
+function fill(t,p,b,c){return t.replace(/{p}/g,p||'ce produit').replace(/{b}/g,b||'obtenir des résultats').replace(/{c}/g,c||'tout le monde');}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor((i+1)*((Date.now()%1000)/1000+i)%(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+let seed=0;
+function gen(){
+  const p=$('prod').value,b=$('benef').value,c=$('cible').value;
+  // rotation déterministe sans Math.random
+  seed=(seed+5)%T.length;
+  const order=[];for(let i=0;i<T.length;i++)order.push(T[(i+seed)%T.length]);
+  const pick=order.slice(0,8);
+  $('list').innerHTML=pick.map(([tag,t])=>{
+    const txt=fill(t,p,b,c);
+    return `<div class="hook"><div><span class="tag">${tag}</span><p>${txt}</p></div><button class="cp" title="Copier" data-h="${txt.replace(/"/g,'&quot;')}">📋</button></div>`;
+  }).join('');
+  document.querySelectorAll('.cp').forEach(btn=>btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(btn.dataset.h);btn.textContent='✓';setTimeout(()=>btn.textContent='📋',1200);
+  }));
+}
+$('gen').addEventListener('click',gen);
+gen();
+</script>
+</body>
+</html>

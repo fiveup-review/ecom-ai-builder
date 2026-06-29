@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Tools — ECOM AI BUILDER</title>
+<meta name="description" content="La boîte à outils e-commerce gratuite : recherche produit, scraping, calculateurs de marge, GIF maker et plus.">
+<link rel="stylesheet" href="assets/tools.css">
+<style>
+  .hero { text-align:center; margin-bottom:34px; }
+  .hero h1 { font-size:38px; }
+  .hero .sub { margin:0 auto; }
+  .cat { font-size:13px; font-weight:600; letter-spacing:.5px; text-transform:uppercase;
+    color:var(--muted); margin:30px 4px 14px; font-family:var(--font-mono); }
+  .tools { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:620px){ .tools{ grid-template-columns:1fr; } }
+  .tool { display:flex; align-items:center; gap:14px; text-decoration:none;
+    background:linear-gradient(180deg,var(--card-2),var(--card));
+    border:1px solid var(--border); border-radius:14px; padding:16px 18px;
+    transition:border-color .15s, transform .12s; }
+  .tool:hover { border-color:var(--border-hover); transform:translateY(-2px); }
+  .tool .ic { width:42px; height:42px; flex:0 0 auto; border-radius:11px; display:grid;
+    place-items:center; font-size:20px; background:var(--inset); border:1px solid var(--border); }
+  .tool .tx { line-height:1.35; }
+  .tool .tx .t { font-weight:600; font-size:15px; color:var(--text); display:flex; align-items:center; gap:8px; }
+  .tool .tx .d { font-size:13px; color:var(--muted); }
+  .badge { font-size:10px; font-weight:800; letter-spacing:.4px; padding:2px 7px; border-radius:6px;
+    color:var(--accent-ink); background:linear-gradient(135deg,var(--accent),var(--accent-2)); font-family:var(--font-mono); }
+  .badge.beta { background:rgba(255,181,71,.15); color:var(--warn); border:1px solid rgba(255,181,71,.3); }
+</style>
+</head>
+<body>
+<main class="wrap wrap--wide">
+
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+
+  <header class="hero">
+    <span class="eyebrow">🧰 Free Tools</span>
+    <h1>La boîte à outils <span class="accent">e-commerce</span> gratuite</h1>
+    <p class="sub">Des outils pensés par des e-commerçants, pour des e-commerçants. Aucune inscription, 100% gratuits.</p>
+  </header>
+
+  <p class="cat">🔥 Recherche produit & scraping</p>
+  <div class="tools">
+    <a class="tool" href="produit-gagnant.html">
+      <span class="ic">🏆</span>
+      <span class="tx"><span class="t">Produit gagnant de la semaine <span class="badge">NEW</span></span>
+      <span class="d">Le produit du moment, analysé en détail</span></span>
+    </a>
+    <a class="tool" href="video-downloader.html">
+      <span class="ic">⬇</span>
+      <span class="tx"><span class="t">Téléchargeur de vidéos <span class="badge beta">BETA</span></span>
+      <span class="d">TikTok sans filigrane, Reels & YouTube</span></span>
+    </a>
+    <a class="tool" href="image-scraper.html">
+      <span class="ic">🖼</span>
+      <span class="tx"><span class="t">Images d'un site <span class="badge beta">BETA</span></span>
+      <span class="d">Extrais tous les visuels d'une page</span></span>
+    </a>
+  </div>
+
+  <p class="cat">💰 Finance & rentabilité</p>
+  <div class="tools">
+    <a class="tool" href="calculateur-marge-profit.html">
+      <span class="ic">💰</span>
+      <span class="tx"><span class="t">Marge & profit</span>
+      <span class="d">Marge brute, nette, markup et profit réel</span></span>
+    </a>
+    <a class="tool" href="calculateur-roas-break-even.html">
+      <span class="ic">📈</span>
+      <span class="tx"><span class="t">ROAS Break-Even</span>
+      <span class="d">Ton seuil de rentabilité publicitaire</span></span>
+    </a>
+    <a class="tool" href="calculateur-dropshipping-profit.html">
+      <span class="ic">📦</span>
+      <span class="tx"><span class="t">Dropshipping Profit</span>
+      <span class="d">Profit net réel produit + pub + fees</span></span>
+    </a>
+    <a class="tool" href="cout-abandon-panier.html">
+      <span class="ic">📉</span>
+      <span class="tx"><span class="t">Coût d'abandon de panier</span>
+      <span class="d">Combien tu perds, combien tu récupères</span></span>
+    </a>
+  </div>
+
+  <p class="cat">🖼 Média & design</p>
+  <div class="tools">
+    <a class="tool" href="editeur-images.html">
+      <span class="ic">🎨</span>
+      <span class="tx"><span class="t">Éditeur d'images <span class="badge">NEW</span></span>
+      <span class="d">Mini-Canva : calques texte, prix, logo sur tes visuels</span></span>
+    </a>
+    <a class="tool" href="gif-maker.html">
+      <span class="ic">🎞</span>
+      <span class="tx"><span class="t">Vidéo en GIF <span class="badge">NEW</span></span>
+      <span class="d">Convertis un extrait vidéo en GIF</span></span>
+    </a>
+    <a class="tool" href="compresseur-image.html">
+      <span class="ic">🗜</span>
+      <span class="tx"><span class="t">Compresseur d'images</span>
+      <span class="d">Allège tes visuels, sans upload</span></span>
+    </a>
+    <a class="tool" href="qr-code-generator.html">
+      <span class="ic">⬛</span>
+      <span class="tx"><span class="t">QR Code Generator</span>
+      <span class="d">QR codes pour packaging & promo</span></span>
+    </a>
+    <a class="tool" href="favicon-generator.html">
+      <span class="ic">⭐</span>
+      <span class="tx"><span class="t">Favicon Generator</span>
+      <span class="d">Favicon multi-format en 1 clic</span></span>
+    </a>
+    <a class="tool" href="safe-zone-reseaux.html">
+      <span class="ic">📐</span>
+      <span class="tx"><span class="t">Safe Zone réseaux</span>
+      <span class="d">Formats & zones sûres Insta/TikTok</span></span>
+    </a>
+  </div>
+
+  <p class="cat">✍️ Contenu & ads</p>
+  <div class="tools">
+    <a class="tool" href="generateur-hooks.html">
+      <span class="ic">🪝</span>
+      <span class="tx"><span class="t">Hook Generator</span>
+      <span class="d">Accroches qui stoppent le scroll</span></span>
+    </a>
+  </div>
+
+  <div class="cta-foot" style="margin-top:38px">
+    <p>Et si toute ta boutique se construisait toute seule&nbsp;?</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+
+</main>
+</body>
+</html>

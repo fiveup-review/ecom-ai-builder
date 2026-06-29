@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safe Zone & Aspect Ratio réseaux sociaux — ECOM AI BUILDER</title>
+<meta name="description" content="Visualisez les zones de sécurité (safe zones) et formats pour Instagram, TikTok, Reels, Facebook. Aperçu de vos visuels. Gratuit.">
+<link rel="stylesheet" href="assets/tools.css">
+<style>
+  .stage { display:grid; place-items:center; padding:24px; background:var(--inset); border:1px solid var(--border); border-radius:var(--radius); }
+  canvas { border-radius:10px; max-width:100%; box-shadow:0 20px 50px -30px #000; }
+  .legend { display:flex; gap:18px; flex-wrap:wrap; margin-top:14px; font-size:13px; color:var(--muted); }
+  .legend i { display:inline-block; width:14px; height:14px; border-radius:4px; margin-right:6px; vertical-align:-2px; }
+  .formats { display:flex; flex-wrap:wrap; gap:8px; }
+  .formats button { width:auto; font-size:12px; padding:8px 13px; border-radius:999px; background:var(--inset); color:var(--muted); border:1px solid var(--border); cursor:pointer; }
+  .formats button.on { color:var(--accent-ink); background:linear-gradient(135deg,var(--accent),var(--accent-2)); border-color:transparent; font-weight:600; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+  <header class="tool-head">
+    <span class="eyebrow">🖼 Média</span>
+    <h1>Safe Zone <span class="accent">réseaux sociaux</span></h1>
+    <p class="sub">Ne laisse plus l'UI de TikTok ou Insta cacher ton texte. Visualise les zones sûres de chaque format et cale tes visuels au bon endroit.</p>
+  </header>
+
+  <div class="card">
+    <p class="card-title">Format</p>
+    <div class="formats" id="formats"></div>
+    <div style="margin-top:16px">
+      <input type="file" id="file" accept="image/*" class="hidden">
+      <button class="btn btn-ghost" onclick="document.getElementById('file').click()">📁 Tester avec mon visuel</button>
+    </div>
+  </div>
+
+  <div class="stage" style="margin-top:18px"><canvas id="cv"></canvas></div>
+  <div class="legend">
+    <span><i style="background:rgba(255,92,122,.5)"></i>Zone masquée par l'UI</span>
+    <span><i style="background:transparent;border:2px dashed #39ff5a"></i>Safe zone : place ton texte ici</span>
+  </div>
+  <p class="note" id="dims">—</p>
+
+  <div class="cta-foot">
+    <p>Des créas calibrées pour chaque plateforme, générées pour ta marque.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+// w,h natifs + safe insets (en px natifs)
+const FORMATS=[
+  {k:'ig1',  name:'Insta Post 1:1', w:1080,h:1080, s:{t:60,r:60,b:60,l:60}},
+  {k:'ig45', name:'Insta Post 4:5', w:1080,h:1350, s:{t:70,r:70,b:70,l:70}},
+  {k:'story',name:'Story / Reel 9:16', w:1080,h:1920, s:{t:250,r:90,b:340,l:90}},
+  {k:'tiktok',name:'TikTok 9:16', w:1080,h:1920, s:{t:160,r:300,b:480,l:60}},
+  {k:'fb',   name:'Facebook 1.91:1', w:1200,h:630, s:{t:50,r:50,b:50,l:50}},
+  {k:'yt',   name:'YouTube 16:9', w:1280,h:720, s:{t:50,r:50,b:90,l:50}},
+];
+let cur=FORMATS[2], userImg=null;
+
+$('formats').innerHTML=FORMATS.map(f=>`<button data-k="${f.k}" class="${f.k===cur.k?'on':''}">${f.name}</button>`).join('');
+document.querySelectorAll('#formats button').forEach(b=>b.addEventListener('click',()=>{
+  cur=FORMATS.find(f=>f.k===b.dataset.k);
+  document.querySelectorAll('#formats button').forEach(x=>x.classList.toggle('on',x===b));draw();
+}));
+
+function draw(){
+  const cv=$('cv'),c=cv.getContext('2d');
+  const maxH=440, scale=maxH/cur.h;
+  const W=Math.round(cur.w*scale), H=maxH;
+  cv.width=W;cv.height=H;
+  // fond
+  if(userImg){
+    const ar=userImg.width/userImg.height, car=W/H;
+    let dw,dh,dx,dy;
+    if(ar>car){dh=H;dw=H*ar;dx=(W-dw)/2;dy=0;}else{dw=W;dh=W/ar;dx=0;dy=(H-dh)/2;}
+    c.drawImage(userImg,dx,dy,dw,dh);
+  }else{
+    const g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,'#0c1813');g.addColorStop(1,'#06090d');
+    c.fillStyle=g;c.fillRect(0,0,W,H);
+    c.fillStyle='rgba(57,255,90,.25)';c.font='600 13px "Space Grotesk",sans-serif';c.textAlign='center';
+    c.fillText('TON VISUEL',W/2,H/2);
+  }
+  // zones masquées (rouge) = tout sauf la safe zone
+  const s=cur.s, x=s.l*scale, y=s.t*scale, w=W-(s.l+s.r)*scale, h=H-(s.t+s.b)*scale;
+  c.fillStyle='rgba(255,92,122,.32)';
+  c.fillRect(0,0,W,y);                 // haut
+  c.fillRect(0,H-s.b*scale,W,s.b*scale); // bas
+  c.fillRect(0,y,x,h);                 // gauche
+  c.fillRect(W-s.r*scale,y,s.r*scale,h); // droite
+  // safe zone (dashed vert)
+  c.strokeStyle='#39ff5a';c.lineWidth=2;c.setLineDash([8,6]);
+  c.strokeRect(x,y,w,h);c.setLineDash([]);
+  $('dims').textContent=`Dimensions recommandées : ${cur.w} × ${cur.h} px · Safe zone : ${Math.round(cur.w-s.l-s.r)} × ${Math.round(cur.h-s.t-s.b)} px`;
+}
+$('file').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const im=new Image();im.onload=()=>{userImg=im;draw();};im.src=ev.target.result;};r.readAsDataURL(f);});
+document.fonts && document.fonts.ready.then(draw);
+draw();
+</script>
+</body>
+</html>

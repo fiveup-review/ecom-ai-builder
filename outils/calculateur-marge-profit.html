@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur de Marge & Profit — ECOM AI BUILDER</title>
+<meta name="description" content="Calculez la marge brute, la marge nette et le profit réel de vos produits e-commerce en quelques secondes. Gratuit.">
+<link rel="stylesheet" href="assets/tools.css">
+</head>
+<body>
+<main class="wrap">
+
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+
+  <header class="tool-head">
+    <span class="eyebrow">💰 Finance</span>
+    <h1>Calculateur de <span class="accent">marge & profit</span></h1>
+    <p class="sub">Connais ton vrai profit. Renseigne tes coûts et obtiens marge brute, marge nette, markup et seuil de rentabilité en quelques secondes.</p>
+  </header>
+
+  <div class="card">
+    <p class="card-title">Tes données</p>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Prix de vente <span class="hint">TTC client</span></label>
+        <div class="input-group has-right">
+          <input type="number" id="prix" value="49.90" min="0" step="0.01">
+          <span class="affix right">€</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Coût du produit <span class="hint">achat / COGS</span></label>
+        <div class="input-group has-right">
+          <input type="number" id="cogs" value="12" min="0" step="0.01">
+          <span class="affix right">€</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Frais de livraison <span class="hint">à ta charge</span></label>
+        <div class="input-group has-right">
+          <input type="number" id="ship" value="4.50" min="0" step="0.01">
+          <span class="affix right">€</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Frais de transaction <span class="hint">Stripe/PayPal</span></label>
+        <div class="input-group has-right">
+          <input type="number" id="fees" value="2.9" min="0" step="0.1">
+          <span class="affix right">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Coût pub par vente <span class="hint">CPA</span></label>
+        <div class="input-group has-right">
+          <input type="number" id="cpa" value="9" min="0" step="0.01">
+          <span class="affix right">€</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>TVA <span class="hint">à reverser</span></label>
+        <div class="input-group has-right">
+          <input type="number" id="tva" value="20" min="0" step="0.1">
+          <span class="affix right">%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result" style="margin-top:18px">
+    <p class="result-label">Profit net par vente</p>
+    <p class="result-big" id="profit">—</p>
+    <span class="pill ok" id="verdict">—</span>
+
+    <div class="breakdown">
+      <div class="row"><span>Prix de vente HT</span><b id="ht">—</b></div>
+      <div class="row"><span>Coût produit + livraison</span><b id="cost">—</b></div>
+      <div class="row"><span>Frais de transaction</span><b id="feeval">—</b></div>
+      <div class="row"><span>Coût publicitaire</span><b id="cpaval">—</b></div>
+      <div class="row"><span>Marge brute</span><b id="brute">—</b></div>
+      <div class="row"><span>Taux de marge nette</span><b id="margepct">—</b></div>
+      <div class="row total"><span>Markup (coefficient)</span><b id="markup">—</b></div>
+    </div>
+  </div>
+
+  <div class="cta-foot">
+    <p>Envie de lancer une marque Shopify rentable en pilote automatique&nbsp;?</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const eur = n => (isFinite(n) ? n.toFixed(2).replace('.', ',') : '0,00') + ' €';
+const ids = ['prix','cogs','ship','fees','cpa','tva'];
+
+function calc() {
+  const prix = +$('prix').value || 0;
+  const cogs = +$('cogs').value || 0;
+  const ship = +$('ship').value || 0;
+  const fees = +$('fees').value || 0;
+  const cpa  = +$('cpa').value  || 0;
+  const tva  = +$('tva').value  || 0;
+
+  const ht       = prix / (1 + tva/100);          // CA hors taxe
+  const feeVal   = prix * (fees/100);             // les frais s'appliquent sur le TTC encaissé
+  const cost     = cogs + ship;
+  const brute    = ht - cost;                      // marge brute (HT - coûts produit)
+  const profit   = ht - cost - feeVal - cpa;       // profit net
+  const margePct = ht > 0 ? (profit / ht) * 100 : 0;
+  const markup   = cost > 0 ? prix / cost : 0;
+
+  $('ht').textContent     = eur(ht);
+  $('cost').textContent   = '– ' + eur(cost);
+  $('feeval').textContent = '– ' + eur(feeVal);
+  $('cpaval').textContent = '– ' + eur(cpa);
+  $('brute').textContent  = eur(brute);
+  $('margepct').textContent = margePct.toFixed(1).replace('.', ',') + ' %';
+  $('markup').textContent = '×' + markup.toFixed(2).replace('.', ',');
+
+  const big = $('profit');
+  big.textContent = eur(profit);
+  big.className = 'result-big' + (profit < 0 ? ' danger' : '');
+
+  const v = $('verdict');
+  if (profit < 0)        { v.className = 'pill bad';  v.textContent = '⚠ Tu perds de l\'argent'; }
+  else if (margePct < 15){ v.className = 'pill warn'; v.textContent = 'Marge fragile (' + margePct.toFixed(0) + '%)'; }
+  else if (margePct < 30){ v.className = 'pill ok';   v.textContent = 'Correct (' + margePct.toFixed(0) + '%)'; }
+  else                   { v.className = 'pill ok';   v.textContent = '🔥 Excellente marge (' + margePct.toFixed(0) + '%)'; }
+}
+
+ids.forEach(id => $(id).addEventListener('input', calc));
+calc();
+</script>
+</body>
+</html>

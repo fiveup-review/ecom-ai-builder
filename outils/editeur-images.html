@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Éditeur d'images / pubs — ECOM AI BUILDER</title>
+<meta name="description" content="Édite tes visuels comme dans Canva : ajoute texte, prix, badges et logo par-dessus tes images, puis exporte en un clic.">
+<link rel="stylesheet" href="assets/tools.css">
+<script src="assets/vendor/fabric.min.js"></script>
+<style>
+  .editor { display:grid; grid-template-columns:1fr 300px; gap:18px; align-items:start; }
+  @media (max-width:860px){ .editor{ grid-template-columns:1fr; } }
+  .stage { background:var(--inset); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; display:grid; place-items:center; min-height:300px; }
+  .stage canvas { border-radius:8px; box-shadow:0 20px 50px -30px #000; }
+  .panel { background:linear-gradient(180deg,var(--card-2),var(--card)); border:1px solid var(--border);
+    border-radius:var(--radius); padding:16px; position:sticky; top:16px; }
+  .panel h4 { font-family:var(--font-mono); font-size:11px; letter-spacing:.5px; text-transform:uppercase;
+    color:var(--muted); margin:0 0 10px; }
+  .tools-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .mini { width:auto; font-size:13px; padding:10px 8px; border-radius:10px; background:var(--inset);
+    color:var(--text); border:1px solid var(--border); cursor:pointer; font-family:var(--font); text-align:center; }
+  .mini:hover { border-color:var(--border-hover); color:var(--accent); }
+  .prop { margin-top:14px; padding-top:14px; border-top:1px solid var(--border-soft); }
+  .prop.dim { opacity:.4; pointer-events:none; }
+  .prop label { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin:10px 0 5px; }
+  .row2 { display:flex; gap:8px; }
+  .row2 .mini { flex:1; }
+  input[type=color]{ width:100%; height:36px; padding:3px; cursor:pointer; }
+  .seg { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px; }
+  .seg button { width:auto; font-size:12px; padding:7px 11px; border-radius:999px; background:var(--inset);
+    color:var(--muted); border:1px solid var(--border); cursor:pointer; }
+  .seg button.on { color:var(--accent-ink); background:linear-gradient(135deg,var(--accent),var(--accent-2)); border-color:transparent; font-weight:600; }
+  .hintbox { font-size:12px; color:var(--muted-2); text-align:center; padding:8px 0; }
+</style>
+</head>
+<body>
+<main class="wrap wrap--wide">
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+  <header class="tool-head">
+    <span class="eyebrow">🎨 Création</span>
+    <h1>Éditeur d'<span class="accent">images</span></h1>
+    <p class="sub">Pars d'une image générée par le bot, ajoute tes calques (texte, prix, badge, logo), déplace, redimensionne, exporte. Comme Canva, dans ton navigateur.</p>
+  </header>
+
+  <div class="card" style="margin-bottom:18px">
+    <div class="seg" id="formats">
+      <button data-f="1:1" class="on">Carré 1:1</button>
+      <button data-f="4:5">Portrait 4:5</button>
+      <button data-f="9:16">Story 9:16</button>
+      <button data-f="16:9">Paysage 16:9</button>
+    </div>
+    <div class="row2" style="margin-top:6px">
+      <button class="mini" id="loadBg">🖼 Charger une image de fond</button>
+      <button class="mini" id="bgColor">🎨 Fond uni</button>
+    </div>
+    <input type="file" id="fileBg" accept="image/*" class="hidden">
+    <input type="file" id="fileLogo" accept="image/*" class="hidden">
+  </div>
+
+  <div class="editor">
+    <div class="stage"><canvas id="c"></canvas></div>
+
+    <div class="panel">
+      <h4>Ajouter un calque</h4>
+      <div class="tools-grid">
+        <button class="mini" data-add="title">＋ Titre</button>
+        <button class="mini" data-add="text">＋ Texte</button>
+        <button class="mini" data-add="price">＋ Prix</button>
+        <button class="mini" data-add="badge">＋ Badge</button>
+        <button class="mini" data-add="cta">＋ Bouton CTA</button>
+        <button class="mini" data-add="shape">＋ Forme</button>
+        <button class="mini" id="addLogo" style="grid-column:span 2">＋ Logo / image</button>
+      </div>
+
+      <div class="prop dim" id="props">
+        <h4>Calque sélectionné</h4>
+        <div id="pText">
+          <label>Texte</label>
+          <textarea id="cText" rows="2" style="min-height:auto"></textarea>
+          <label>Taille <span id="cSizeV">40</span></label>
+          <input type="range" id="cSize" min="10" max="160" value="40">
+          <div class="row2"><button class="mini" id="cBold">Gras</button><button class="mini" id="cAlign">Aligner</button></div>
+          <label>Couleur du texte</label>
+          <input type="color" id="cColor" value="#ffffff">
+        </div>
+        <div id="pFill">
+          <label>Couleur de fond / forme</label>
+          <input type="color" id="cFill" value="#39ff5a">
+        </div>
+        <label>Opacité <span id="cOpV">100</span>%</label>
+        <input type="range" id="cOp" min="10" max="100" value="100">
+        <div class="prop">
+          <div class="row2"><button class="mini" id="cFwd">⬆ Avancer</button><button class="mini" id="cBack">⬇ Reculer</button></div>
+          <div class="row2" style="margin-top:8px"><button class="mini" id="cDup">⧉ Dupliquer</button><button class="mini" id="cDel" style="color:var(--danger)">🗑 Supprimer</button></div>
+        </div>
+      </div>
+      <div class="hintbox" id="hint">Clique un calque pour l'éditer.<br>Touche <b>Suppr</b> pour effacer.</div>
+    </div>
+  </div>
+
+  <div class="row2" style="margin-top:18px;gap:12px">
+    <button class="btn btn-ghost" id="reset">↻ Tout réinitialiser</button>
+    <button class="btn btn-primary" id="export">⬇ Exporter en PNG</button>
+  </div>
+
+  <div class="cta-foot">
+    <p>Génère tes visuels par IA, personnalise-les ici, publie. Le tout dans ECOM AI BUILDER.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const FORMATS={'1:1':[1080,1080],'4:5':[1080,1350],'9:16':[1080,1920],'16:9':[1920,1080]};
+let target=[1080,1080], scale=1;
+
+const canvas=new fabric.Canvas('c',{preserveObjectStacking:true,backgroundColor:'#0c1813'});
+
+function applyFormat(key){
+  target=FORMATS[key];
+  const maxW=520,maxH=600;
+  scale=Math.min(maxW/target[0],maxH/target[1],1);
+  canvas.setWidth(Math.round(target[0]*scale));
+  canvas.setHeight(Math.round(target[1]*scale));
+  // re-cover le fond si présent
+  if(canvas.backgroundImage) coverBg(canvas.backgroundImage);
+  canvas.renderAll();
+}
+document.querySelectorAll('#formats button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#formats button').forEach(x=>x.classList.toggle('on',x===b));
+  applyFormat(b.dataset.f);
+}));
+
+function coverBg(img){
+  const s=Math.max(canvas.width/img.width,canvas.height/img.height);
+  img.set({scaleX:s,scaleY:s,originX:'center',originY:'center',left:canvas.width/2,top:canvas.height/2});
+}
+function setBg(url){
+  fabric.Image.fromURL(url,img=>{coverBg(img);canvas.setBackgroundImage(img,canvas.renderAll.bind(canvas));},{crossOrigin:'anonymous'});
+}
+
+// --- Chargement fond ---
+$('loadBg').addEventListener('click',()=>$('fileBg').click());
+$('fileBg').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setBg(ev.target.result);r.readAsDataURL(f);});
+$('bgColor').addEventListener('click',()=>{const c=prompt('Couleur de fond (hex)','#0c1813');if(c){canvas.backgroundImage=null;canvas.setBackgroundColor(c,canvas.renderAll.bind(canvas));}});
+
+// --- Ajout de calques ---
+function add(obj){canvas.add(obj);canvas.setActiveObject(obj);canvas.renderAll();}
+const cx=()=>canvas.width/2, cy=()=>canvas.height/2;
+function addTitle(){add(new fabric.IText('TON TITRE ICI',{left:cx(),top:60,originX:'center',fontFamily:'Space Grotesk, sans-serif',fontWeight:'700',fontSize:54,fill:'#ffffff',textAlign:'center'}));}
+function addText(){add(new fabric.IText('Double-clique pour éditer',{left:cx(),top:cy(),originX:'center',fontFamily:'Inter, sans-serif',fontSize:32,fill:'#ffffff'}));}
+function addPrice(){add(new fabric.IText('29,90 €',{left:cx(),top:cy(),originX:'center',fontFamily:'Space Grotesk, sans-serif',fontWeight:'700',fontSize:64,fill:'#39ff5a'}));}
+function addBadge(){
+  const t=new fabric.IText('-50%',{fontFamily:'Space Grotesk, sans-serif',fontWeight:'700',fontSize:36,fill:'#04140a',originX:'center',originY:'center'});
+  const r=new fabric.Rect({width:t.width+40,height:t.height+24,rx:14,ry:14,fill:'#39ff5a',originX:'center',originY:'center'});
+  add(new fabric.Group([r,t],{left:90,top:90}));
+}
+function addCta(){
+  const t=new fabric.IText('J\'EN PROFITE',{fontFamily:'Space Grotesk, sans-serif',fontWeight:'700',fontSize:28,fill:'#04140a',originX:'center',originY:'center'});
+  const r=new fabric.Rect({width:t.width+56,height:t.height+34,rx:999,ry:999,fill:'#39ff5a',originX:'center',originY:'center'});
+  add(new fabric.Group([r,t],{left:cx(),top:canvas.height-90,originX:'center'}));
+}
+function addShape(){add(new fabric.Rect({left:cx(),top:cy(),originX:'center',originY:'center',width:300,height:120,rx:16,ry:16,fill:'rgba(57,255,90,.85)'}));}
+document.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>({title:addTitle,text:addText,price:addPrice,badge:addBadge,cta:addCta,shape:addShape}[b.dataset.add]())));
+$('addLogo').addEventListener('click',()=>$('fileLogo').click());
+$('fileLogo').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>fabric.Image.fromURL(ev.target.result,img=>{img.scaleToWidth(Math.min(220,canvas.width*0.4));img.set({left:cx(),top:cy(),originX:'center',originY:'center'});add(img);});r.readAsDataURL(f);});
+
+// --- Helpers texte (gère IText seul + groupe rect+texte) ---
+function textTarget(o){if(!o)return null;if(o.type==='i-text'||o.type==='textbox')return o;if(o.type==='group')return o.getObjects().find(x=>x.type==='i-text');return null;}
+function fillTarget(o){if(!o)return null;if(o.type==='rect')return o;if(o.type==='group')return o.getObjects().find(x=>x.type==='rect');return null;}
+
+// --- Panneau propriétés ---
+function refresh(){
+  const o=canvas.getActiveObject();
+  const p=$('props');
+  if(!o){p.classList.add('dim');$('hint').style.display='block';return;}
+  p.classList.remove('dim');$('hint').style.display='none';
+  const t=textTarget(o), f=fillTarget(o);
+  $('pText').style.display=t?'block':'none';
+  $('pFill').style.display=(f||o.type==='rect')?'block':'none';
+  if(t){$('cText').value=t.text;$('cSize').value=t.fontSize;$('cSizeV').textContent=Math.round(t.fontSize);$('cColor').value=t.fill;}
+  if(f){$('cFill').value=f.fill&&f.fill[0]==='#'?f.fill:'#39ff5a';}
+  $('cOp').value=Math.round((o.opacity??1)*100);$('cOpV').textContent=$('cOp').value;
+}
+canvas.on('selection:created',refresh);
+canvas.on('selection:updated',refresh);
+canvas.on('selection:cleared',refresh);
+
+$('cText').addEventListener('input',()=>{const o=canvas.getActiveObject(),t=textTarget(o);if(!t)return;t.set('text',$('cText').value);if(o.type==='group')fitBadge(o);canvas.renderAll();});
+$('cSize').addEventListener('input',()=>{const t=textTarget(canvas.getActiveObject());if(!t)return;t.set('fontSize',+$('cSize').value);$('cSizeV').textContent=$('cSize').value;const o=canvas.getActiveObject();if(o.type==='group')fitBadge(o);canvas.renderAll();});
+$('cColor').addEventListener('input',()=>{const t=textTarget(canvas.getActiveObject());if(t){t.set('fill',$('cColor').value);canvas.renderAll();}});
+$('cFill').addEventListener('input',()=>{const f=fillTarget(canvas.getActiveObject());if(f){f.set('fill',$('cFill').value);canvas.renderAll();}});
+$('cOp').addEventListener('input',()=>{const o=canvas.getActiveObject();if(o){o.set('opacity',+$('cOp').value/100);$('cOpV').textContent=$('cOp').value;canvas.renderAll();}});
+$('cBold').addEventListener('click',()=>{const t=textTarget(canvas.getActiveObject());if(t){t.set('fontWeight',t.fontWeight==='700'?'400':'700');canvas.renderAll();}});
+$('cAlign').addEventListener('click',()=>{const t=textTarget(canvas.getActiveObject());if(t){const a=['left','center','right'];t.set('textAlign',a[(a.indexOf(t.textAlign)+1)%3]);canvas.renderAll();}});
+$('cFwd').addEventListener('click',()=>{const o=canvas.getActiveObject();if(o){canvas.bringForward(o);canvas.renderAll();}});
+$('cBack').addEventListener('click',()=>{const o=canvas.getActiveObject();if(o){canvas.sendBackwards(o);canvas.renderAll();}});
+$('cDup').addEventListener('click',()=>{const o=canvas.getActiveObject();if(o)o.clone(c=>{c.set({left:o.left+20,top:o.top+20});add(c);});});
+$('cDel').addEventListener('click',delActive);
+function delActive(){const o=canvas.getActiveObject();if(o){canvas.remove(o);canvas.discardActiveObject();canvas.renderAll();refresh();}}
+// redimensionne le rect du badge/cta quand le texte change
+function fitBadge(g){const t=g.getObjects().find(x=>x.type==='i-text'),r=g.getObjects().find(x=>x.type==='rect');if(t&&r){r.set({width:t.width+ (r.rx>100?56:40),height:t.height+ (r.rx>100?34:24)});g.addWithUpdate();}}
+
+document.addEventListener('keydown',e=>{if((e.key==='Delete'||e.key==='Backspace')&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)&&!canvas.getActiveObject()?.isEditing){if(canvas.getActiveObject()){e.preventDefault();delActive();}}});
+
+// --- Export ---
+$('export').addEventListener('click',()=>{
+  canvas.discardActiveObject();canvas.renderAll();
+  const url=canvas.toDataURL({format:'png',multiplier:1/scale});
+  const a=document.createElement('a');a.href=url;a.download='visuel-ecom.png';a.click();
+});
+$('reset').addEventListener('click',()=>{if(confirm('Tout effacer ?')){canvas.clear();canvas.setBackgroundColor('#0c1813',canvas.renderAll.bind(canvas));refresh();}});
+
+// --- Démarrage + intégration bot : ?bg=URL_de_l_image ---
+applyFormat('1:1');
+const bg=new URLSearchParams(location.search).get('bg');
+if(bg) setBg(bg);
+</script>
+</body>
+</html>

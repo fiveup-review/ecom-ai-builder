@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compresseur & Redimensionneur d'images — ECOM AI BUILDER</title>
+<meta name="description" content="Compressez et redimensionnez vos images produits (JPG, PNG, WebP) directement dans le navigateur. Aucun upload, 100% privé. Gratuit.">
+<link rel="stylesheet" href="assets/tools.css">
+<style>
+  .drop {
+    border: 1.5px dashed var(--border-hover); border-radius: var(--radius);
+    background: rgba(31,230,200,.03); padding: 44px 20px; text-align:center;
+    cursor:pointer; transition: background .15s, border-color .15s;
+  }
+  .drop:hover, .drop.over { background: rgba(31,230,200,.08); }
+  .drop .ic { font-size:34px; }
+  .drop h3 { margin:12px 0 4px; font-size:16px; }
+  .drop p { margin:0; color:var(--muted); font-size:13px; }
+  .preview { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:6px; }
+  @media (max-width:560px){ .preview{ grid-template-columns:1fr; } }
+  .pv { background:var(--inset); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px; text-align:center; }
+  .pv img { max-width:100%; max-height:200px; border-radius:8px; }
+  .pv .meta { margin-top:10px; font-size:13px; color:var(--muted); }
+  .pv .meta b { color:var(--text); font-variant-numeric:tabular-nums; }
+  .saved { color:var(--accent); font-weight:700; }
+</style>
+</head>
+<body>
+<main class="wrap wrap--wide">
+
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+
+  <header class="tool-head">
+    <span class="eyebrow">🖼 Média</span>
+    <h1>Compresseur <span class="accent">d'images</span></h1>
+    <p class="sub">Allège tes images produits pour booster la vitesse de ta boutique. Tout se passe dans ton navigateur, aucun upload, 100% privé.</p>
+  </header>
+
+  <div class="card">
+    <input type="file" id="file" accept="image/*" class="hidden">
+    <div class="drop" id="drop">
+      <div class="ic">⬆️</div>
+      <h3>Glisse une image ici</h3>
+      <p>ou clique pour parcourir · JPG, PNG, WebP</p>
+    </div>
+  </div>
+
+  <div class="card hidden" id="panel">
+    <p class="card-title">Réglages</p>
+    <div class="grid-3">
+      <div class="field">
+        <label>Largeur max <span class="hint">px</span></label>
+        <div class="input-group has-right">
+          <input type="number" id="maxw" value="1600" min="50" step="50">
+          <span class="affix right">px</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Format de sortie</label>
+        <select id="fmt">
+          <option value="image/webp">WebP (recommandé)</option>
+          <option value="image/jpeg">JPG</option>
+          <option value="image/png">PNG</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Qualité <span class="hint" id="qlbl">80 %</span></label>
+        <input type="range" id="q" value="80" min="10" max="100" step="1">
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="pv">
+        <img id="imgBefore" alt="original">
+        <div class="meta">Original<br><b id="sBefore">—</b> · <span id="dBefore">—</span></div>
+      </div>
+      <div class="pv">
+        <img id="imgAfter" alt="compressé">
+        <div class="meta">Compressé<br><b id="sAfter">—</b> · <span id="dAfter">—</span></div>
+      </div>
+    </div>
+
+    <p class="center" style="margin:16px 0 18px"><span class="pill ok" id="gain">—</span></p>
+
+    <div class="grid-2">
+      <button class="btn btn-ghost" onclick="reset()">↻ Autre image</button>
+      <button class="btn btn-primary" id="dl">⬇ Télécharger</button>
+    </div>
+  </div>
+
+  <div class="cta-foot">
+    <p>Une boutique rapide = plus de ventes. ECOM AI BUILDER optimise tout pour toi.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+let original = null, outBlob = null, outName = 'image';
+
+const fmtBytes = b => b < 1024 ? b + ' o'
+  : b < 1048576 ? (b/1024).toFixed(1).replace('.', ',') + ' Ko'
+  : (b/1048576).toFixed(2).replace('.', ',') + ' Mo';
+
+// Drag & drop
+const drop = $('drop');
+drop.addEventListener('click', () => $('file').click());
+['dragover','dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', ev => { if (ev.dataTransfer.files[0]) load(ev.dataTransfer.files[0]); });
+$('file').addEventListener('change', ev => { if (ev.target.files[0]) load(ev.target.files[0]); });
+
+function load(file) {
+  if (!file.type.startsWith('image/')) return;
+  outName = file.name.replace(/\.[^.]+$/, '');
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      original = { img, size: file.size, w: img.naturalWidth, h: img.naturalHeight };
+      $('imgBefore').src = e.target.result;
+      $('sBefore').textContent = fmtBytes(file.size);
+      $('dBefore').textContent = img.naturalWidth + '×' + img.naturalHeight;
+      $('drop').parentElement.classList.add('hidden');
+      $('panel').classList.remove('hidden');
+      process();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function process() {
+  if (!original) return;
+  const maxw = +$('maxw').value || original.w;
+  const q = (+$('q').value || 80) / 100;
+  const fmt = $('fmt').value;
+
+  const ratio = Math.min(1, maxw / original.w);
+  const w = Math.round(original.w * ratio);
+  const h = Math.round(original.h * ratio);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  const c = canvas.getContext('2d');
+  c.drawImage(original.img, 0, 0, w, h);
+
+  canvas.toBlob(blob => {
+    if (!blob) return;
+    outBlob = blob;
+    const url = URL.createObjectURL(blob);
+    $('imgAfter').src = url;
+    $('sAfter').textContent = fmtBytes(blob.size);
+    $('dAfter').textContent = w + '×' + h;
+
+    const pct = Math.max(0, Math.round((1 - blob.size / original.size) * 100));
+    const g = $('gain');
+    if (blob.size < original.size) { g.className = 'pill ok';  g.textContent = '✓ −' + pct + '% de poids économisé'; }
+    else                          { g.className = 'pill warn'; g.textContent = 'Augmente la compression ou baisse la qualité'; }
+    const ext = fmt.split('/')[1];
+    $('dl').textContent = '⬇ Télécharger .' + ext;
+  }, fmt, q);
+}
+
+$('q').addEventListener('input', () => { $('qlbl').textContent = $('q').value + ' %'; process(); });
+['maxw','fmt'].forEach(id => $(id).addEventListener('input', process));
+
+$('dl').addEventListener('click', () => {
+  if (!outBlob) return;
+  const ext = $('fmt').value.split('/')[1];
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(outBlob);
+  a.download = outName + '-compresse.' + ext;
+  a.click();
+});
+
+function reset() {
+  original = null; outBlob = null; $('file').value = '';
+  $('panel').classList.add('hidden');
+  $('drop').parentElement.classList.remove('hidden');
+}
+</script>
+</body>
+</html>

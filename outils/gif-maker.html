@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidéo en GIF — ECOM AI BUILDER</title>
+<meta name="description" content="Convertissez vos vidéos en GIF animé directement dans le navigateur. Choisissez le segment, le fps et la taille. Gratuit, sans upload.">
+<link rel="stylesheet" href="assets/tools.css">
+<script src="assets/vendor/gif.js"></script>
+<style>
+  .drop { border:1.5px dashed var(--border-hover); border-radius:var(--radius); background:rgba(57,255,90,.03);
+    padding:44px 20px; text-align:center; cursor:pointer; transition:background .15s; }
+  .drop:hover,.drop.over { background:rgba(57,255,90,.08); }
+  .drop .ic { font-size:34px; }
+  .drop h3 { margin:12px 0 4px; font-size:16px; }
+  .drop p { margin:0; color:var(--muted); font-size:13px; }
+  video,.gifout img { max-width:100%; border-radius:10px; display:block; }
+  .stage { background:var(--inset); border:1px solid var(--border); border-radius:var(--radius); padding:16px; }
+  .bar { height:8px; border-radius:999px; background:var(--inset); border:1px solid var(--border); overflow:hidden; }
+  .bar i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition:width .1s; }
+  .gifout { text-align:center; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+  <header class="tool-head">
+    <span class="eyebrow">🎞 Média</span>
+    <h1>Vidéo en <span class="accent">GIF</span></h1>
+    <p class="sub">Transforme un extrait vidéo en GIF animé pour tes pubs, fiches produits ou réseaux. Tout dans ton navigateur, aucun upload.</p>
+  </header>
+
+  <div class="card" id="dropCard">
+    <input type="file" id="file" accept="video/*" class="hidden">
+    <div class="drop" id="drop">
+      <div class="ic">🎬</div>
+      <h3>Glisse une vidéo ici</h3>
+      <p>ou clique pour parcourir · MP4, MOV, WebM</p>
+    </div>
+  </div>
+
+  <div class="card hidden" id="editor">
+    <div class="stage"><video id="video" controls muted playsinline></video></div>
+
+    <div class="grid-2" style="margin-top:18px">
+      <div class="field"><label>Début <span class="hint" id="sl">0,0 s</span></label><input type="range" id="start" min="0" max="100" step="0.1" value="0"></div>
+      <div class="field"><label>Durée <span class="hint" id="dl">3,0 s</span></label><input type="range" id="dur" min="0.5" max="10" step="0.5" value="3"></div>
+      <div class="field"><label>Images / sec <span class="hint" id="fl">10 fps</span></label><input type="range" id="fps" min="5" max="20" step="1" value="10"></div>
+      <div class="field"><label>Largeur <span class="hint" id="wl">480 px</span></label><input type="range" id="w" min="160" max="720" step="40" value="480"></div>
+    </div>
+
+    <div class="grid-2" style="margin-top:8px">
+      <button class="btn btn-ghost" onclick="reset()">↻ Autre vidéo</button>
+      <button class="btn btn-primary" id="make">⚡ Créer le GIF</button>
+    </div>
+
+    <div class="hidden" id="prog" style="margin-top:18px">
+      <div class="bar"><i id="progBar"></i></div>
+      <p class="note center" id="progTxt">Préparation…</p>
+    </div>
+  </div>
+
+  <div class="card hidden" id="result">
+    <p class="card-title">Ton GIF</p>
+    <div class="gifout"><img id="gifImg" alt="gif"></div>
+    <p class="note center" id="gifMeta">—</p>
+    <button class="btn btn-primary" style="margin-top:8px" id="dl">⬇ Télécharger le GIF</button>
+  </div>
+
+  <div class="cta-foot">
+    <p>Crée des visuels animés qui vendent, sans logiciel compliqué.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const WORKER='assets/vendor/gif.worker.js';
+let videoURL=null, gifBlob=null;
+
+const drop=$('drop');
+drop.addEventListener('click',()=>$('file').click());
+['dragover','dragenter'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',ev=>{if(ev.dataTransfer.files[0])load(ev.dataTransfer.files[0]);});
+$('file').addEventListener('change',ev=>{if(ev.target.files[0])load(ev.target.files[0]);});
+
+function load(file){
+  if(!file.type.startsWith('video/'))return;
+  videoURL=URL.createObjectURL(file);
+  const v=$('video');v.src=videoURL;
+  v.onloadedmetadata=()=>{
+    $('dropCard').classList.add('hidden');$('editor').classList.remove('hidden');
+    $('start').max=Math.max(0.1,v.duration-0.5);
+    $('dur').max=Math.min(10,v.duration);
+    sync();
+  };
+}
+function sync(){
+  $('sl').textContent=(+$('start').value).toFixed(1).replace('.',',')+' s';
+  $('dl').textContent=(+$('dur').value).toFixed(1).replace('.',',')+' s';
+  $('fl').textContent=$('fps').value+' fps';
+  $('wl').textContent=$('w').value+' px';
+  $('video').currentTime=+$('start').value;
+}
+['start','dur','fps','w'].forEach(id=>$(id).addEventListener('input',sync));
+
+function seek(v,t){return new Promise(res=>{const h=()=>{v.removeEventListener('seeked',h);res();};v.addEventListener('seeked',h);v.currentTime=Math.min(t,v.duration-0.01);});}
+
+$('make').addEventListener('click',async()=>{
+  const v=$('video');
+  const start=+$('start').value, dur=+$('dur').value, fps=+$('fps').value, w=+$('w').value;
+  const h=Math.round(w*v.videoHeight/v.videoWidth);
+  const total=Math.max(1,Math.round(dur*fps)), delay=Math.round(1000/fps);
+  const cv=document.createElement('canvas');cv.width=w;cv.height=h;const ctx=cv.getContext('2d');
+
+  $('make').disabled=true;$('prog').classList.remove('hidden');$('result').classList.add('hidden');
+  $('progBar').style.width='0%';
+
+  const gif=new GIF({workers:2,quality:10,workerScript:WORKER,width:w,height:h});
+  for(let i=0;i<total;i++){
+    await seek(v,start+i/fps);
+    ctx.drawImage(v,0,0,w,h);
+    gif.addFrame(ctx,{copy:true,delay});
+    $('progTxt').textContent='Capture des images… '+(i+1)+'/'+total;
+    $('progBar').style.width=(i/total*60)+'%';
+  }
+  gif.on('progress',p=>{$('progTxt').textContent='Encodage du GIF…';$('progBar').style.width=(60+p*40)+'%';});
+  gif.on('finished',blob=>{
+    gifBlob=blob;
+    $('gifImg').src=URL.createObjectURL(blob);
+    $('gifMeta').textContent=w+'×'+h+' · '+total+' images · '+(blob.size/1048576).toFixed(2).replace('.',',')+' Mo';
+    $('prog').classList.add('hidden');$('result').classList.remove('hidden');$('make').disabled=false;
+    $('result').scrollIntoView({behavior:'smooth'});
+  });
+  gif.render();
+});
+$('dl').addEventListener('click',()=>{if(!gifBlob)return;const a=document.createElement('a');a.href=URL.createObjectURL(gifBlob);a.download='animation.gif';a.click();});
+function reset(){gifBlob=null;$('file').value='';$('editor').classList.add('hidden');$('result').classList.add('hidden');$('dropCard').classList.remove('hidden');}
+</script>
+</body>
+</html>

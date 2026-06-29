@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produits Gagnants de la semaine — ECOM AI BUILDER</title>
+<meta name="description" content="Les 10 produits e-commerce gagnants de la semaine, analysés en détail : marge, audience, angle pub, hooks et lien du concurrent. Par ECOM AI BUILDER.">
+<link rel="stylesheet" href="assets/tools.css">
+<style>
+  .nav { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+  .nav .arrow { width:auto; flex:0 0 auto; padding:10px 16px; font-size:18px; border-radius:999px;
+    background:var(--card-2); color:var(--text); border:1px solid var(--border); cursor:pointer; }
+  .nav .arrow:hover { border-color:var(--border-hover); color:var(--accent); }
+  .nav .arrow[disabled] { opacity:.35; cursor:not-allowed; }
+  .counter { font-family:var(--font-mono); font-size:14px; color:var(--muted); }
+  .counter b { color:var(--accent); }
+  .dots { display:flex; gap:7px; justify-content:center; flex-wrap:wrap; margin:18px 0 0; }
+  .dot { width:9px; height:9px; border-radius:50%; background:var(--border); border:0; padding:0; cursor:pointer; transition:transform .12s; }
+  .dot.on { background:var(--accent); transform:scale(1.35); }
+  .slide { animation:fade .25s ease; }
+  @keyframes fade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+  .hero { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  @media (max-width:620px){ .hero{ grid-template-columns:1fr; } }
+  .ph { aspect-ratio:1; border-radius:var(--radius); overflow:hidden; border:1px solid var(--border);
+    background:linear-gradient(135deg,#0c1813,#06090d); display:grid; place-items:center; }
+  .ph img { width:100%; height:100%; object-fit:cover; }
+  .ph .noimg { color:var(--muted-2); font-family:var(--font-mono); font-size:13px; }
+  .score { font-family:var(--font-mono); font-size:54px; font-weight:500; color:var(--accent); line-height:1; text-shadow:0 0 28px var(--glow); }
+  .metrics { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+  .metric { background:var(--inset); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 14px; }
+  .metric .k { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
+  .metric .v { font-family:var(--font-mono); font-size:20px; color:var(--text); margin-top:2px; }
+  .metric .v.green { color:var(--accent); }
+  .tags { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 0; }
+  .tag { font-size:12px; font-family:var(--font-mono); color:var(--accent); background:rgba(57,255,90,.1); border:1px solid rgba(57,255,90,.2); padding:4px 10px; border-radius:999px; }
+  .sat { height:10px; border-radius:999px; background:var(--inset); border:1px solid var(--border); overflow:hidden; }
+  .sat i { display:block; height:100%; border-radius:999px; }
+  .sec h3 { font-family:var(--font-display); font-size:17px; margin:0 0 10px; }
+  .sec p, .sec li { color:var(--text); font-size:15px; line-height:1.6; }
+  .sec ul { margin:0; padding-left:20px; } .hooks li { margin-bottom:8px; }
+  .week { font-family:var(--font-mono); font-size:12px; color:var(--accent); letter-spacing:.5px; }
+  .byline { color:var(--muted); font-size:14px; margin:0 0 10px; }
+  .byline b { color:var(--text); font-weight:600; }
+  .comp { display:flex; align-items:center; gap:10px; }
+</style>
+</head>
+<body>
+<main class="wrap wrap--wide">
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+
+  <header class="tool-head">
+    <span class="eyebrow">🔥 Sélection de la semaine</span>
+    <h1>Mes <span class="accent">10 produits gagnants</span></h1>
+    <p class="byline">Sélectionnés à la main par <b>Lucas Cotelle</b> · <span id="weekLabel"></span></p>
+    <p class="sub">Comme chaque semaine, je vous ai sélectionné 10 produits qui, pour moi, ont un vrai potentiel et qui méritent d'être testés. Premier arrivé, premier servi.</p>
+  </header>
+
+  <div class="nav">
+    <button class="arrow" id="prev">←</button>
+    <span class="counter">Produit <b id="cur">1</b> / <span id="total">1</span></span>
+    <button class="arrow" id="next">→</button>
+  </div>
+
+  <div id="slide"></div>
+
+  <div class="dots" id="dots"></div>
+
+  <div class="cta-foot" style="margin-top:30px">
+    <p>Trouve TES produits gagnants et lance la boutique autour, en pilote automatique.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+</main>
+
+<script>
+/* =====================================================================
+   👉 ÉDITE CE BLOC CHAQUE SEMAINE.
+   - Change SEMAINE.
+   - Ajoute/modifie les produits dans PRODUITS (jusqu'à 10, ou plus).
+   - "competitor" = lien de la boutique concurrente. "image" = URL d'un visuel.
+   Tout le reste de la page est automatique (carrousel, score, etc.).
+   ===================================================================== */
+const SEMAINE = "Semaine 26 · 2026";
+
+const PRODUITS = [
+  {
+    name: "Coussin cervical à mémoire de forme",
+    competitor: "https://exemple-concurrent.com/products/coussin-cervical",
+    image: "",
+    score: 87,
+    tags: ["Niche santé/bien-être", "Achat impulsif", "Léger à expédier"],
+    price: "34,90 €", cost: "6,80 €", margin: "80 %", roas: "1,25×",
+    saturation: 35,
+    why: "Problème universel (douleurs cervicales, mauvais sommeil) + démo visuelle forte en vidéo. Faible coût, grosse marge, panier facilement augmentable avec un bundle.",
+    audience: "Femmes & hommes 30-55 ans, télétravail / métiers sédentaires, intérêt sommeil & bien-être. Cible secondaire : cadeau pour un parent âgé.",
+    angle: "Avant/après sur la posture et la qualité de sommeil. Preuve sociale (avis 5★) + garantie satisfait ou remboursé pour lever l'objection prix.",
+    hooks: [
+      "« Si tu te réveilles avec la nuque raide… arrête de scroller. »",
+      "« J'ai testé ce coussin pendant 7 nuits. Voilà ce qui s'est passé. »",
+      "« Le seul achat à moins de 35€ qui a réglé mes douleurs cervicales. »"
+    ],
+    sourcing: "5-8€ port inclus (AliExpress / agents CJ-Zendrop). Tendance Google stable. Sécuriser un agent < 10 jours de délai."
+  },
+  {
+    name: "(Exemple) Lampe coucher de soleil",
+    competitor: "https://exemple-concurrent.com/products/lampe-sunset",
+    image: "",
+    score: 78,
+    tags: ["Déco", "Viral TikTok", "Petit panier"],
+    price: "24,90 €", cost: "5,20 €", margin: "77 %", roas: "1,30×",
+    saturation: 62,
+    why: "Effet 'wow' immédiat à l'écran, parfait pour l'UGC. Déjà bien vue → il faut une créa différenciante.",
+    audience: "15-30 ans, déco chambre / ambiance, créateurs de contenu.",
+    angle: "Ambiance 'golden hour' à la maison. Mettre en scène la transformation d'une pièce.",
+    hooks: [
+      "« Ta chambre mérite un coucher de soleil h24. »",
+      "« POV : t'as trouvé la lampe parfaite pour tes vidéos. »",
+      "« 3€ d'électricité par an pour cette ambiance ? Vendu. »"
+    ],
+    sourcing: "4-6€ port inclus. Marché qui se sature → différencier par l'offre (bundle, télécommande)."
+  }
+  // … ajoute jusqu'à 10 produits ici
+];
+/* ===================================================================== */
+
+const $=id=>document.getElementById(id);
+let idx=0;
+function satColor(v){return v<40?'var(--accent)':v<70?'var(--warn)':'var(--danger)';}
+function satLabel(v){return v<40?'🟢 Marché encore frais, la fenêtre d\'opportunité est ouverte.':v<70?'🟡 Concurrence présente, il faut une créa qui sort du lot.':'🔴 Saturé, réservé à un angle ou une offre vraiment différenciante.';}
+
+function slideHTML(p){
+  return `<div class="slide">
+    <div class="card">
+      <div class="hero">
+        <div class="ph">${p.image?`<img src="${p.image}" alt="${p.name}">`:'<span class="noimg">📦 Visuel produit</span>'}</div>
+        <div>
+          <span class="week">${SEMAINE}</span>
+          <h2 style="font-family:var(--font-display);font-size:24px;margin:6px 0 10px">${p.name}</h2>
+          <p class="result-label">Score de potentiel</p>
+          <div class="score">${p.score}<span style="font-size:24px;color:var(--muted)">/100</span></div>
+          <div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+          <div class="metrics">
+            <div class="metric"><div class="k">Prix conseillé</div><div class="v green">${p.price}</div></div>
+            <div class="metric"><div class="k">Coût sourcing</div><div class="v">${p.cost}</div></div>
+            <div class="metric"><div class="k">Marge brute</div><div class="v green">${p.margin}</div></div>
+            <div class="metric"><div class="k">ROAS break-even</div><div class="v">${p.roas}</div></div>
+          </div>
+          ${p.competitor?`<a class="btn btn-primary" style="margin-top:16px" href="${p.competitor}" target="_blank" rel="noopener">🔗 Voir la fiche du concurrent →</a>`:''}
+        </div>
+      </div>
+    </div>
+
+    <div class="card"><p class="card-title">Niveau de saturation</p>
+      <div class="sat"><i style="width:${p.saturation}%;background:${satColor(p.saturation)}"></i></div>
+      <p class="note">${satLabel(p.saturation)}</p>
+    </div>
+    <div class="card sec"><h3>💡 Pourquoi ça marche</h3><p>${p.why}</p></div>
+    <div class="card sec"><h3>🎯 Audience cible</h3><p>${p.audience}</p></div>
+    <div class="card sec"><h3>📣 Angle publicitaire</h3><p>${p.angle}</p></div>
+    <div class="card sec hooks"><h3>🪝 3 hooks à tester</h3><ul>${p.hooks.map(h=>`<li>${h}</li>`).join('')}</ul></div>
+    <div class="card sec"><h3>📦 Sourcing & tendance</h3><p>${p.sourcing}</p></div>
+  </div>`;
+}
+
+function render(){
+  const p=PRODUITS[idx];
+  $('slide').innerHTML=slideHTML(p);
+  $('cur').textContent=idx+1;
+  $('prev').disabled=idx===0;
+  $('next').disabled=idx===PRODUITS.length-1;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===idx));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function go(i){ idx=Math.max(0,Math.min(PRODUITS.length-1,i)); render(); }
+
+$('weekLabel').textContent=SEMAINE;
+$('total').textContent=PRODUITS.length;
+$('dots').innerHTML=PRODUITS.map((_,i)=>`<button class="dot" data-i="${i}"></button>`).join('');
+document.querySelectorAll('.dot').forEach(d=>d.addEventListener('click',()=>go(+d.dataset.i)));
+$('prev').addEventListener('click',()=>go(idx-1));
+$('next').addEventListener('click',()=>go(idx+1));
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')go(idx-1);if(e.key==='ArrowRight')go(idx+1);});
+render();
+</script>
+</body>
+</html>

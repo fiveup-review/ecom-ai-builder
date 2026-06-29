@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur de QR Code — ECOM AI BUILDER</title>
+<meta name="description" content="Générez des QR codes personnalisés pour vos packagings, cartes de visite et campagnes. Téléchargement PNG. Gratuit.">
+<link rel="stylesheet" href="assets/tools.css">
+<!-- Lib QR autonome (le dev peut la self-host) -->
+<script src="assets/vendor/qrcode.min.js"></script>
+<style>
+  .qrbox { display:grid; place-items:center; padding:24px; background:var(--inset);
+    border:1px solid var(--border); border-radius:var(--radius); }
+  .qrbox .frame { background:#fff; padding:16px; border-radius:12px; }
+  .qrbox img, .qrbox canvas { display:block; }
+  .swatch { display:flex; gap:10px; align-items:center; }
+  .swatch input[type=color]{ width:46px; height:40px; padding:3px; cursor:pointer; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+  <header class="tool-head">
+    <span class="eyebrow">🖼 Média</span>
+    <h1>Générateur de <span class="accent">QR Code</span></h1>
+    <p class="sub">Crée des QR codes pour tes packagings, cartes de remerciement et campagnes. Personnalise les couleurs et télécharge en PNG haute résolution.</p>
+  </header>
+
+  <div class="card">
+    <div class="field">
+      <label>Contenu <span class="hint">URL, texte, tel, email…</span></label>
+      <input type="text" id="data" value="https://ecom-ai-builder.com/">
+    </div>
+    <div class="grid-3">
+      <div class="field">
+        <label>Couleur</label>
+        <div class="swatch"><input type="color" id="fg" value="#05070a"></div>
+      </div>
+      <div class="field">
+        <label>Fond</label>
+        <div class="swatch"><input type="color" id="bg" value="#ffffff"></div>
+      </div>
+      <div class="field">
+        <label>Taille <span class="hint" id="szl">512 px</span></label>
+        <input type="range" id="sz" min="128" max="1024" step="32" value="512">
+      </div>
+    </div>
+  </div>
+
+  <div class="qrbox" style="margin-top:18px">
+    <div class="frame" id="frame"><div id="qr"></div></div>
+  </div>
+
+  <button class="btn btn-primary" style="margin-top:16px" id="dl">⬇ Télécharger en PNG</button>
+
+  <div class="cta-foot">
+    <p>Une marque complète, packaging et assets compris, générée pour toi.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let qr=null;
+function render(){
+  const size=+$('sz').value;
+  $('szl').textContent=size+' px';
+  $('qr').innerHTML='';
+  qr=new QRCode($('qr'),{
+    text:$('data').value||' ',
+    width:size,height:size,
+    colorDark:$('fg').value,colorLight:$('bg').value,
+    correctLevel:QRCode.CorrectLevel.H
+  });
+}
+function dl(){
+  const cv=$('qr').querySelector('canvas');
+  const img=$('qr').querySelector('img');
+  const src=cv?cv.toDataURL('image/png'):(img?img.src:null);
+  if(!src)return;
+  const a=document.createElement('a');a.href=src;a.download='qrcode.png';a.click();
+}
+['data','fg','bg'].forEach(id=>$(id).addEventListener('input',render));
+$('sz').addEventListener('input',render);
+$('dl').addEventListener('click',dl);
+window.addEventListener('load',render);
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur ROAS Break-Even — ECOM AI BUILDER</title>
+<meta name="description" content="Calculez votre ROAS de rentabilité (break-even) et le ROAS cible pour atteindre votre marge nette. Gratuit pour e-commerçants.">
+<link rel="stylesheet" href="assets/tools.css">
+</head>
+<body>
+<main class="wrap">
+
+  <div class="brand"><span class="logo">AI</span> ECOM&nbsp;<b>AI</b>&nbsp;BUILDER</div>
+
+  <header class="tool-head">
+    <span class="eyebrow">📈 Publicité</span>
+    <h1>Calculateur <span class="accent">ROAS Break-Even</span></h1>
+    <p class="sub">À partir de quel ROAS tes pubs deviennent rentables&nbsp;? Trouve ton seuil de rentabilité et le ROAS à viser pour ta marge cible.</p>
+  </header>
+
+  <div class="card">
+    <p class="card-title">Économie de ton produit</p>
+    <div class="grid-2">
+      <div class="field">
+        <label>Prix de vente <span class="hint">HT</span></label>
+        <div class="input-group has-right">
+          <input type="number" id="prix" value="60" min="0" step="0.01">
+          <span class="affix right">€</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Coût total / produit <span class="hint">COGS + livraison + fees</span></label>
+        <div class="input-group has-right">
+          <input type="number" id="cost" value="24" min="0" step="0.01">
+          <span class="affix right">€</span>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Marge nette visée <span class="hint" id="tgtlbl">20 %</span></label>
+      <input type="range" id="target" value="20" min="0" max="60" step="1">
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:18px">
+    <div class="result">
+      <p class="result-label">ROAS de rentabilité (break-even)</p>
+      <p class="result-big" id="beRoas">—</p>
+      <span class="pill ok">Au-dessus = tu gagnes de l'argent</span>
+    </div>
+    <div class="result">
+      <p class="result-label">ROAS cible (pour ta marge)</p>
+      <p class="result-big neutral" id="tgtRoas">—</p>
+      <span class="pill warn" id="tgtPill">—</span>
+    </div>
+  </div>
+
+  <div class="result" style="margin-top:18px">
+    <div class="breakdown" style="border-top:0;margin-top:0">
+      <div class="row"><span>Marge brute par produit</span><b id="marge">—</b></div>
+      <div class="row"><span>Taux de marge brute</span><b id="margepct">—</b></div>
+      <div class="row"><span>CPA max au break-even</span><b id="cpaMax">—</b></div>
+      <div class="row total"><span>CPA max pour ta marge cible</span><b id="cpaTgt">—</b></div>
+    </div>
+    <p class="note">ROAS break-even = Prix ÷ Marge brute. En dessous de ce ROAS, chaque vente te coûte de l'argent. Le ROAS cible intègre la marge nette que tu veux conserver.</p>
+  </div>
+
+  <div class="cta-foot">
+    <p>Tes pubs galèrent à être rentables&nbsp;? Construis une marque pensée pour la marge.</p>
+    <a class="btn btn-primary" href="https://ecom-ai-builder.com/">Découvrir ECOM AI BUILDER →</a>
+  </div>
+
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const eur = n => (isFinite(n) ? n.toFixed(2).replace('.', ',') : '0,00') + ' €';
+
+function calc() {
+  const prix = +$('prix').value || 0;
+  const cost = +$('cost').value || 0;
+  const tgt  = +$('target').value || 0;
+
+  $('tgtlbl').textContent = tgt + ' %';
+
+  const marge    = prix - cost;
+  const margePct = prix > 0 ? marge / prix : 0;
+  const beRoas   = marge > 0 ? prix / marge : 0;           // break-even ROAS
+  const cpaMax   = marge;                                   // tu peux dépenser jusqu'à la marge
+
+  // ROAS cible : on veut garder (tgt% * prix) de profit net après pub
+  const profitWanted = prix * (tgt/100);
+  const cpaTgt   = marge - profitWanted;                    // budget pub max restant
+  const tgtRoas  = cpaTgt > 0 ? prix / cpaTgt : Infinity;
+
+  $('marge').textContent    = eur(marge);
+  $('margepct').textContent = (margePct*100).toFixed(1).replace('.', ',') + ' %';
+  $('cpaMax').textContent   = eur(cpaMax);
+
+  const be = $('beRoas');
+  if (marge <= 0) { be.textContent = '∞'; be.className = 'result-big danger'; }
+  else { be.textContent = beRoas.toFixed(2).replace('.', ',') + '×'; be.className = 'result-big'; }
+
+  const tr = $('tgtRoas'); const tp = $('tgtPill');
+  if (cpaTgt <= 0) {
+    tr.textContent = 'Impossible'; tr.className = 'result-big danger';
+    $('cpaTgt').textContent = '0,00 €';
+    tp.className = 'pill bad'; tp.textContent = 'Marge cible trop haute pour ce produit';
+  } else {
+    tr.textContent = tgtRoas.toFixed(2).replace('.', ',') + '×'; tr.className = 'result-big neutral';
+    $('cpaTgt').textContent = eur(cpaTgt);
+    tp.className = 'pill warn'; tp.textContent = 'Vise ≥ ' + tgtRoas.toFixed(2).replace('.', ',') + '× sur tes campagnes';
+  }
+}
+
+['prix','cost','target'].forEach(id => $(id).addEventListener('input', calc));
+calc();
+</script>
+</body>
+</html>
