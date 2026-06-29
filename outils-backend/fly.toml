@@ -1,0 +1,25 @@
+# App fly.io SÉPARÉE pour le backend des outils (téléchargeur vidéo + scraper).
+# ⚠️ NE PAS confondre avec l'app `ecom-ai-builder` (daemon Discord/jobs).
+# Déploiement : depuis ce dossier (outils-backend/) -> `fly deploy`.
+app = "ecom-ai-builder-tools"
+primary_region = "cdg"
+
+[build]
+  # Utilise le Dockerfile du dossier (Node + Python + ffmpeg + yt-dlp).
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8787"
+
+[http_service]
+  internal_port = 8787
+  force_https = true
+  # Scale-to-zero : la VM s'éteint à l'inactivité et redémarre à la 1re requête
+  # (cold start ~quelques s). On ne paie que quand un outil est utilisé.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"
