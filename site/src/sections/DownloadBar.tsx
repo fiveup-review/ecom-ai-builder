@@ -10,7 +10,7 @@ export function DownloadBar() {
         <div className="flex flex-col items-start justify-between gap-8 rounded-xl border bg-secondary/40 p-8 sm:p-10 md:flex-row md:items-center">
           <div className="flex flex-col gap-2">
             <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
-              Télécharge l'app maintenant.
+              Teste l'app toi-même.
             </h2>
             <p className="text-muted-foreground text-pretty">
               macOS et Windows. Le pipeline tourne sur ta machine.
