@@ -1,5 +1,6 @@
 import { Nav } from "@/sections/Nav"
 import { Hero } from "@/sections/Hero"
+import { Features } from "@/sections/Features"
 
 function App() {
   return (
@@ -7,6 +8,7 @@ function App() {
       <Nav />
       <main>
         <Hero />
+        <Features />
       </main>
     </>
   )
