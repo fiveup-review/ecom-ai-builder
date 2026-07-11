@@ -79,6 +79,27 @@ export const STEPS = [
   },
 ]
 
+export const TEAM = [
+  {
+    name: "Lucas Cotelle",
+    role: "Fondateur · 3 ans d'e-commerce",
+    bio: "3 ans que je suis dans l'e-commerce : des dizaines de boutiques lancées, testées, scalées. Le testing produit me bouffait des semaines à chaque fois. J'ai construit ECOM AI BUILDER pour faire en 28 minutes ce que je faisais à la main. Et je documente tout, sans filtre, sur mes réseaux.",
+    photo: "/team/lucas.jpg",
+    links: [
+      { label: "YouTube", href: "https://www.youtube.com/@lucascotelle" },
+      { label: "Instagram", href: "https://www.instagram.com/lucascotelle_ecom/" },
+      { label: "TikTok", href: "https://www.tiktok.com/@lucascotelle" },
+    ],
+  },
+  {
+    name: "Paul",
+    role: "Co-builder · Automatisation & IA",
+    bio: "L'automatisation et l'IA, c'est mon terrain. Avec Lucas, on a fait d'ECOM AI BUILDER une vraie infra qui tourne, pas un prompt ChatGPT déguisé. Chaque brique est testée pour sortir un résultat propre, à chaque build.",
+    photo: "/team/paul.jpg",
+    links: [{ label: "YouTube", href: "https://www.youtube.com/@paulautomatIA" }],
+  },
+]
+
 export const FAQ_ITEMS = [
   {
     question: "Faut-il savoir coder ?",

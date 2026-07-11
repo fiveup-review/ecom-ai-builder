@@ -2,6 +2,7 @@ import { Nav } from "@/sections/Nav"
 import { Hero } from "@/sections/Hero"
 import { Features } from "@/sections/Features"
 import { Testimonials } from "@/sections/Testimonials"
+import { Team } from "@/sections/Team"
 import { HowItWorks } from "@/sections/HowItWorks"
 import { Faq } from "@/sections/Faq"
 import { FinalCta } from "@/sections/FinalCta"
@@ -15,6 +16,7 @@ function App() {
         <Hero />
         <Features />
         <Testimonials />
+        <Team />
         <HowItWorks />
         <Faq />
         <FinalCta />
