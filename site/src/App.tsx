@@ -5,6 +5,7 @@ import { Testimonials } from "@/sections/Testimonials"
 import { HowItWorks } from "@/sections/HowItWorks"
 import { Faq } from "@/sections/Faq"
 import { FinalCta } from "@/sections/FinalCta"
+import { Footer } from "@/sections/Footer"
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Faq />
         <FinalCta />
       </main>
+      <Footer />
     </>
   )
 }
