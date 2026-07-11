@@ -99,15 +99,3 @@ export function Offer() {
     </section>
   )
 }
-
-export function DownloadSection() {
-  return (
-    <section id="download" className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
-      <SectionHeading eyebrow="Télécharger" title="Télécharge l'app." />
-      <PlaceholderBox>
-        [PLACEHOLDER] 2 cards : macOS (.dmg, boutons Apple Silicon + Intel) et
-        Windows (.exe) avec notes d'installation.
-      </PlaceholderBox>
-    </section>
-  )
-}
