@@ -12,23 +12,25 @@ export function Nav() {
             ECOM AI BUILDER
           </span>
         </a>
-        <div className="hidden items-center gap-8 font-mono text-xs uppercase tracking-widest text-muted-foreground md:flex">
-          <a href="#avis" className="transition-colors hover:text-foreground">
-            Avis
-          </a>
-          <a href="/outils/" className="transition-colors hover:text-foreground">
-            Outils
-          </a>
-          <a href="#faq" className="transition-colors hover:text-foreground">
-            FAQ
-          </a>
+        <div className="flex items-center gap-8">
+          <div className="hidden items-center gap-8 font-mono text-xs uppercase tracking-widest text-muted-foreground md:flex">
+            <a href="#avis" className="transition-colors hover:text-foreground">
+              Avis
+            </a>
+            <a href="/outils/" className="transition-colors hover:text-foreground">
+              Outils
+            </a>
+            <a href="#faq" className="transition-colors hover:text-foreground">
+              FAQ
+            </a>
+          </div>
+          <Button asChild size="sm">
+            <a href={LINKS.macSilicon}>
+              <Download />
+              Télécharger
+            </a>
+          </Button>
         </div>
-        <Button asChild size="sm">
-          <a href={LINKS.macSilicon}>
-            <Download />
-            Télécharger
-          </a>
-        </Button>
       </nav>
     </header>
   )
