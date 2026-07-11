@@ -1,5 +1,4 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react"
-import { useReducedMotion } from "motion/react"
 import { Reveal } from "@/components/Reveal"
 import { SectionHeading } from "@/components/SectionHeading"
 import { PIPELINE_STEPS } from "@/lib/content"
@@ -29,7 +28,6 @@ function useNearViewport<T extends HTMLElement>() {
 }
 
 export function Pipeline() {
-  const reduced = useReducedMotion()
   const { ref, near } = useNearViewport<HTMLDivElement>()
 
   return (
@@ -48,8 +46,7 @@ export function Pipeline() {
             {near ? (
               <Suspense fallback={null}>
                 <DitherWaves
-                  disableAnimation={!!reduced}
-                  waveSpeed={0.03}
+                  waveSpeed={0.06}
                   waveFrequency={2.6}
                   waveAmplitude={0.32}
                   pixelSize={2}

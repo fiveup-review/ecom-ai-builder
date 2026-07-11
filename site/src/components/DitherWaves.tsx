@@ -195,10 +195,13 @@ function DitheredWaves({
   mouseRadius,
 }: DitheredWavesProps) {
   const mesh = useRef<THREE.Mesh>(null)
+  const materialRef = useRef<THREE.ShaderMaterial>(null)
   const mouseRef = useRef(new THREE.Vector2())
   const { viewport, size, gl } = useThree()
 
-  const waveUniformsRef = useRef<WaveUniforms>({
+  // Objet de construction uniquement : three (r185) CLONE les uniforms passés
+  // au ShaderMaterial — toute mise à jour doit muter materialRef.current.uniforms.
+  const initialUniformsRef = useRef<WaveUniforms>({
     time: new THREE.Uniform(0),
     resolution: new THREE.Uniform(new THREE.Vector2(0, 0)),
     waveSpeed: new THREE.Uniform(waveSpeed),
@@ -211,10 +214,12 @@ function DitheredWaves({
   })
 
   useEffect(() => {
+    const u = materialRef.current?.uniforms
+    if (!u) return
     const dpr = gl.getPixelRatio()
     const newWidth = Math.floor(size.width * dpr)
     const newHeight = Math.floor(size.height * dpr)
-    const currentRes = waveUniformsRef.current.resolution.value as THREE.Vector2
+    const currentRes = u.resolution.value as THREE.Vector2
     if (currentRes.x !== newWidth || currentRes.y !== newHeight) {
       currentRes.set(newWidth, newHeight)
     }
@@ -222,23 +227,24 @@ function DitheredWaves({
 
   const prevColor = useRef([...waveColor])
   useFrame(({ clock }) => {
-    const u = waveUniformsRef.current
+    const u = materialRef.current?.uniforms
+    if (!u) return
 
     if (!disableAnimation) {
-      ;(u.time as THREE.Uniform<number>).value = clock.getElapsedTime()
+      u.time.value = clock.getElapsedTime()
     }
 
-    ;(u.waveSpeed as THREE.Uniform<number>).value = waveSpeed
-    ;(u.waveFrequency as THREE.Uniform<number>).value = waveFrequency
-    ;(u.waveAmplitude as THREE.Uniform<number>).value = waveAmplitude
+    u.waveSpeed.value = waveSpeed
+    u.waveFrequency.value = waveFrequency
+    u.waveAmplitude.value = waveAmplitude
 
     if (!prevColor.current.every((v, i) => v === waveColor[i])) {
       ;(u.waveColor.value as THREE.Color).set(...waveColor)
       prevColor.current = [...waveColor]
     }
 
-    ;(u.enableMouseInteraction as THREE.Uniform<number>).value = enableMouseInteraction ? 1 : 0
-    ;(u.mouseRadius as THREE.Uniform<number>).value = mouseRadius
+    u.enableMouseInteraction.value = enableMouseInteraction ? 1 : 0
+    u.mouseRadius.value = mouseRadius
 
     if (enableMouseInteraction) {
       ;(u.mousePos.value as THREE.Vector2).copy(mouseRef.current)
@@ -257,9 +263,10 @@ function DitheredWaves({
       <mesh ref={mesh} scale={[viewport.width, viewport.height, 1]}>
         <planeGeometry args={[1, 1]} />
         <shaderMaterial
+          ref={materialRef}
           vertexShader={waveVertexShader}
           fragmentShader={waveFragmentShader}
-          uniforms={waveUniformsRef.current}
+          uniforms={initialUniformsRef.current}
         />
       </mesh>
 
