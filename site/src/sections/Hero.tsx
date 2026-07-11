@@ -50,16 +50,12 @@ export function Hero() {
           </p>
         </Reveal>
         <Reveal delay={0.2} className="mt-8 w-full">
-          <AppWindow title="ecom-ai-builder" className="mx-auto max-w-4xl">
-            <video
-              src="/videos/shopify.mp4"
-              className="block aspect-video w-full object-cover"
-              muted
-              autoPlay
-              loop
-              playsInline
-              preload="metadata"
-            />
+          <AppWindow title="ecom-ai-builder" className="w-full">
+            <div className="flex aspect-[16/10] w-full items-center justify-center bg-secondary/30">
+              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                Aperçu de l'app à venir
+              </span>
+            </div>
           </AppWindow>
         </Reveal>
       </div>
