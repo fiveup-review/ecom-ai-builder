@@ -13,8 +13,8 @@ export function Nav() {
           </span>
         </a>
         <div className="hidden items-center gap-8 font-mono text-xs uppercase tracking-widest text-muted-foreground md:flex">
-          <a href="#features" className="transition-colors hover:text-foreground">
-            Features
+          <a href="#avis" className="transition-colors hover:text-foreground">
+            Avis
           </a>
           <a href="/outils/" className="transition-colors hover:text-foreground">
             Outils

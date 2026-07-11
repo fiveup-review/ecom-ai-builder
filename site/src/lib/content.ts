@@ -1,3 +1,5 @@
+import { Zap, Palette, Clock } from "lucide-react"
+
 export const LINKS = {
   macSilicon:
     "https://github.com/fiveup-review/ecom-ai-builder/releases/latest/download/ECOM-AI-BUILDER-macOS-AppleSilicon.dmg",
@@ -8,74 +10,33 @@ export const LINKS = {
   discord: "https://whop.com/joined/ecom-ai-builder/",
 }
 
-export const FEATURES = [
-  {
-    eyebrow: "Recherche produit",
-    title: "Des produits gagnants, détectés pour toi.",
-    description:
-      "L'IA analyse les tendances du marché et te propose des produits à fort potentiel, avec les données pour décider.",
-    video: "/videos/recherche.mp4",
-  },
-  {
-    eyebrow: "Marque & identité",
-    title: "Nom, persona, charte, logo.",
-    description:
-      "Analyse du marché, persona client, propositions de noms, couleurs, typographies et logo générés sur mesure.",
-    video: "/videos/marque.mp4",
-  },
-  {
-    eyebrow: "Visuels",
-    title: "Des visuels prêts à vendre.",
-    description:
-      "Packshots, images d'ambiance et visuels de bénéfices générés par IA pour tout ton catalogue.",
-    video: "/videos/visuels.mp4",
-  },
-  {
-    eyebrow: "Mise en ligne Shopify",
-    title: "Boutique livrée, thème et pages inclus.",
-    description:
-      "Fiches produits complètes, thème configuré, pages légales : ta boutique est en ligne, prête à encaisser.",
-    video: "/videos/shopify.mp4",
-  },
-]
-
 export const TESTIMONIALS = [
   {
     quote:
-      "J'ai lancé trois boutiques la première semaine. Le temps gagné sur la partie marque et visuels est juste énorme.",
+      "javais jamais cru qu'on pouvait sortir une boutique aussi vite franchement. la première était en ligne en meme pas 30min, du coup jai pu test genre 8 produits dans la semaine au lieu d'un seul. enorme",
+    stat: "8 produits testés / semaine",
+    statIcon: Zap,
     name: "Jules",
-    role: "E-commerçant",
+    handle: "jules",
     avatar: "/avatars/avis-jules.jpg",
   },
   {
     quote:
-      "Le pipeline complet depuis Discord, c'est ce qui change tout. Je valide chaque étape sans toucher à rien d'autre.",
-    name: "Mathis",
-    role: "Dropshipper",
-    avatar: "/avatars/avis-mathis.jpg",
+      "le truc ouf cest les visuels, ca sort direct propre. avant je payais un graphiste a chaque test la jai plus besoin. ca m'a clairement fait economiser pas mal",
+    stat: "0 € de graphiste",
+    statIcon: Palette,
+    name: "Ruben",
+    handle: "ruben",
+    avatar: "/avatars/avis-ruben.jpg",
   },
   {
     quote:
-      "La qualité des fiches produits m'a surpris. C'est le premier outil qui sort un résultat que je mettrais en ligne tel quel.",
-    name: "Ruben",
-    role: "Media buyer",
-    avatar: "/avatars/avis-ruben.jpg",
-  },
-]
-
-export const STEPS = [
-  {
-    title: "Télécharge l'app",
-    description: "macOS ou Windows. Le pipeline tourne sur ta machine.",
-  },
-  {
-    title: "Connecte tes outils",
-    description: "Discord, Shopify et tes accès IA, en quelques clics.",
-  },
-  {
-    title: "Lance un build",
-    description:
-      "Tu valides chaque étape depuis Discord, l'IA fait le reste jusqu'à la boutique en ligne.",
+      "jaime bien le fait de valider chaque etape sur discord, tu gardes la main et le support repond super vite quand tas une question. le temps que ca fait gagner cest pas croyable",
+    stat: "~1 semaine de boulot gagnée",
+    statIcon: Clock,
+    name: "Mathis",
+    handle: "mathis",
+    avatar: "/avatars/avis-mathis.jpg",
   },
 ]
 

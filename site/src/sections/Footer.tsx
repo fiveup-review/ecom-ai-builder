@@ -6,7 +6,7 @@ const COLUMNS = [
   {
     title: "Produit",
     links: [
-      { label: "Features", href: "#features" },
+      { label: "Avis", href: "#avis" },
       { label: "Télécharger", href: LINKS.macSilicon },
       { label: "FAQ", href: "#faq" },
     ],
