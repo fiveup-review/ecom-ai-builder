@@ -10,6 +10,33 @@ export const LINKS = {
   discord: "https://whop.com/joined/ecom-ai-builder/",
 }
 
+export const PIPELINE_STEPS = [
+  {
+    number: "01",
+    title: "Recherche produit",
+    description:
+      "L'IA scanne les tendances et te sort des produits à fort potentiel, données à l'appui.",
+  },
+  {
+    number: "02",
+    title: "Identité de marque",
+    description:
+      "Nom, persona client, charte graphique, logo : une marque complète, générée sur mesure.",
+  },
+  {
+    number: "03",
+    title: "Images IA",
+    description:
+      "Packshots, visuels d'ambiance et images de bénéfices, prêts à mettre en ligne.",
+  },
+  {
+    number: "04",
+    title: "Push Shopify",
+    description:
+      "Fiches produits, thème configuré, pages légales : ta boutique part en ligne en un clic.",
+  },
+]
+
 export const TESTIMONIALS = [
   {
     quote:

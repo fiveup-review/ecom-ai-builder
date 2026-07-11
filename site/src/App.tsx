@@ -1,5 +1,6 @@
 import { Nav } from "@/sections/Nav"
 import { Hero } from "@/sections/Hero"
+import { Pipeline } from "@/sections/Pipeline"
 import { DownloadBar } from "@/sections/DownloadBar"
 import { Testimonials } from "@/sections/Testimonials"
 import { Team } from "@/sections/Team"
@@ -13,6 +14,7 @@ function App() {
       <Nav />
       <main>
         <Hero />
+        <Pipeline />
         <Testimonials />
         <DownloadBar />
         <Team />
