@@ -65,7 +65,7 @@ export const FAQ_ITEMS = [
   {
     question: "Faut-il savoir coder ?",
     answer:
-      "Non. Tout se pilote depuis Discord et l'app. Aucune ligne de code à écrire.",
+      "Non. Tout se pilote depuis l'app. Aucune ligne de code à écrire.",
   },
   {
     question: "Ça me coûte quoi en plus de l'abonnement ?",
@@ -88,7 +88,7 @@ export const FAQ_ITEMS = [
   {
     question: "Je garde le contrôle sur le résultat ?",
     answer:
-      "Oui. Chaque étape du pipeline attend ta validation dans Discord avant de continuer.",
+      "Oui. Chaque étape du pipeline attend ta validation dans l'app avant de continuer.",
   },
   {
     question: "Comment j'annule ?",

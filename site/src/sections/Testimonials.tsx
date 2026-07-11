@@ -21,7 +21,6 @@ export function Testimonials() {
       <SectionHeading
         eyebrow="Ils l'utilisent"
         title="Des boutiques en ligne toutes les 30 minutes."
-        description="Pas une démo, pas une promesse : un vrai outil que les membres lancent au quotidien. La boutique sort propre en 30 minutes, et eux gardent leur énergie pour le seul truc qui compte vraiment, aller chercher des clients."
       />
       <div className="mt-16 grid gap-6 md:grid-cols-3">
         {TESTIMONIALS.map((t, i) => {

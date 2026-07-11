@@ -18,7 +18,7 @@ export function Hero() {
             className="gap-2 border-primary/30 bg-primary/5 px-3 py-1 font-mono text-xs uppercase tracking-widest text-primary"
           >
             <span className="size-1.5 rounded-full bg-primary" />
-            Piloté depuis Discord
+            Piloté depuis l'app
           </Badge>
         </Reveal>
         <Reveal delay={0.05}>

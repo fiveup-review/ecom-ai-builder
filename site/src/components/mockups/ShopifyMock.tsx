@@ -26,7 +26,7 @@ export function ShopifyMock() {
         </span>
         <span className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
           <Check className="size-3.5 text-primary" />
-          Validé sur Discord
+          Validé dans l'app
         </span>
       </div>
     </div>

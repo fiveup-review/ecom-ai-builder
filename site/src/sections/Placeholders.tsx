@@ -37,7 +37,7 @@ export function BeforeAfter() {
       <PlaceholderBox>
         [PLACEHOLDER] Comparatif avant/après en deux colonnes — « Sans l'app » :
         2 semaines, graphiste, thème à configurer… vs « Avec l'app » : 28
-        minutes, tout généré, tu valides sur Discord.
+        minutes, tout généré, tu valides dans l'app.
       </PlaceholderBox>
     </section>
   )
@@ -77,8 +77,9 @@ export function HowItWorks() {
         title="Démarre en quelques minutes."
       />
       <PlaceholderBox>
-        [PLACEHOLDER] 3 étapes : télécharge l'app → connecte Discord/Shopify →
-        lance un build. Format à définir (timeline, terminal animé, stepper…).
+        [PLACEHOLDER] 3 étapes : télécharge l'app → connecte Shopify et tes
+        accès IA → lance un build. Format à définir (timeline, terminal animé,
+        stepper…).
       </PlaceholderBox>
     </section>
   )
@@ -92,9 +93,9 @@ export function Offer() {
         title="Ce que tu obtiens, sans engagement."
       />
       <PlaceholderBox>
-        [PLACEHOLDER] Inclus dans ton accès (Discord privé + bot, app desktop,
-        pipeline complet, mises à jour) + prix affiché + zéro risque
-        (résiliation Whop 1 clic) + tes données restent chez toi.
+        [PLACEHOLDER] Inclus dans ton accès (app desktop, pipeline complet,
+        accès à la communauté Discord, mises à jour) + prix affiché + zéro
+        risque (résiliation Whop 1 clic) + tes données restent chez toi.
       </PlaceholderBox>
     </section>
   )
