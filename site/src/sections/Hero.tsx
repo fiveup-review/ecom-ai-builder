@@ -1,6 +1,5 @@
 import { Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { AppWindow } from "@/components/AppWindow"
 import { DotPattern } from "@/components/DotPattern"
 import { Reveal } from "@/components/Reveal"
@@ -12,15 +11,6 @@ export function Hero() {
     <section className="relative overflow-hidden pt-40 pb-24">
       <DotPattern />
       <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 text-center sm:px-6">
-        <Reveal>
-          <Badge
-            variant="outline"
-            className="gap-2 border-primary/30 bg-primary/5 px-3 py-1 font-mono text-xs uppercase tracking-widest text-primary"
-          >
-            <span className="size-1.5 rounded-full bg-primary" />
-            Piloté depuis l'app
-          </Badge>
-        </Reveal>
         <Reveal delay={0.05}>
           <h1 className="max-w-4xl font-display text-5xl font-bold tracking-tight text-balance sm:text-7xl">
             Pendant qu'ils testent 1 produit,{" "}
