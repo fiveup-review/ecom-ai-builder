@@ -1,6 +1,6 @@
 import { AppWindow } from "@/components/AppWindow"
 import { Reveal } from "@/components/Reveal"
-import { SectionHeading } from "@/components/SectionHeading"
+import { Eyebrow, SectionHeading } from "@/components/SectionHeading"
 import { FEATURES } from "@/lib/content"
 import { cn } from "@/lib/utils"
 
@@ -22,9 +22,7 @@ export function Features() {
               )}
             >
               <div className="flex flex-1 flex-col gap-4">
-                <span className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-primary">
-                  {feature.eyebrow}
-                </span>
+                <Eyebrow text={feature.eyebrow} />
                 <h3 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
                   {feature.title}
                 </h3>
