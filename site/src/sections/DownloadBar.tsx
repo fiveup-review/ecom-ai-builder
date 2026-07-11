@@ -17,7 +17,11 @@ export function DownloadBar() {
             </p>
           </div>
           <div className="flex shrink-0 flex-col items-start gap-2 md:items-end">
-            <Button asChild size="lg" className="h-12 px-7 text-base">
+            <Button
+              asChild
+              size="lg"
+              className="h-12 bg-white px-7 text-base text-black hover:bg-white/90"
+            >
               <a href={LINKS.macSilicon}>
                 <Download />
                 Télécharger pour Mac
