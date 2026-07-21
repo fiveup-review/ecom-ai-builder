@@ -24,11 +24,11 @@ export function FinalCta() {
           </Button>
           <p className="font-mono text-xs text-muted-foreground">
             Aussi pour{" "}
-            <a href={LINKS.macIntel} className="underline underline-offset-4 hover:text-foreground">
+            <a href={LINKS.macIntel} className="inline-block py-2 underline underline-offset-4 hover:text-foreground">
               Mac Intel
             </a>{" "}
             ·{" "}
-            <a href={LINKS.windows} className="underline underline-offset-4 hover:text-foreground">
+            <a href={LINKS.windows} className="inline-block py-2 underline underline-offset-4 hover:text-foreground">
               Windows
             </a>
           </p>

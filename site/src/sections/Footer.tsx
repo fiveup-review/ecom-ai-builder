@@ -6,9 +6,9 @@ const COLUMNS = [
   {
     title: "Produit",
     links: [
-      { label: "Avis", href: "#avis" },
+      { label: "Avis", href: "/#avis" },
       { label: "Télécharger", href: LINKS.macSilicon },
-      { label: "FAQ", href: "#faq" },
+      { label: "FAQ", href: "/#faq" },
     ],
   },
   {
@@ -27,8 +27,8 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div className="flex flex-col justify-between gap-12 md:flex-row">
           <div className="flex max-w-xs flex-col gap-3">
-            <a href="#" className="flex items-center gap-2.5">
-              <img src="/icon.png" alt="" className="size-7 rounded-md" />
+            <a href="/" className="flex items-center gap-2.5">
+              <img src="/logo.png" alt="" width={28} height={28} className="size-7 rounded-md" />
               <span className="font-display text-sm font-bold tracking-wide">
                 ECOM AI BUILDER
               </span>

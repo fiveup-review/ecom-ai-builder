@@ -1,0 +1,16 @@
+{
+  "name": "ECOM AI BUILDER",
+  "short_name": "ECOM AI BUILDER",
+  "description": "Boutiques Shopify générées par IA",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#050607",
+  "theme_color": "#050607",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}

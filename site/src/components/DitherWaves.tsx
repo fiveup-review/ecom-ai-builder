@@ -1,290 +1,37 @@
-/* Adapté de reactbits.dev/backgrounds/dither — vagues bruitées + post-process
-   Bayer 8x8, couleurs par défaut alignées sur les tokens de la marque. */
-import { useRef, useEffect, forwardRef } from "react"
-import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber"
-import { EffectComposer, wrapEffect } from "@react-three/postprocessing"
-import { Effect } from "postprocessing"
-import * as THREE from "three"
+// Fond dither animé — Canvas 2D pur (aucune dépendance WebGL/three.js).
+// Même logique visuelle que la version reactbits d'origine : bruit fbm
+// (déformation de domaine, façon "billowy") + tramage ordonné Bayer 8x8 +
+// quantification des couleurs. Reproduite ici en JS/Canvas pour le coût :
+// three + @react-three/fiber + postprocessing pesaient ~250 Ko gzip et
+// tournaient un shader à pleine résolution ; ce composant calcule sur une
+// grille réduite (résolution interne = la grille de tramage, mise à l'échelle
+// via CSS + image-rendering:pixelated) et amortit le bruit sur une grille
+// encore plus grossière, interpolée — le budget par frame reste de l'ordre du
+// million d'opérations quel que soit la taille du panneau.
+import { useEffect, useRef } from "react"
+import { noise2D } from "@/lib/noise"
 
-const waveVertexShader = `
-precision highp float;
-varying vec2 vUv;
-void main() {
-  vUv = uv;
-  vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-  vec4 viewPosition = viewMatrix * modelPosition;
-  gl_Position = projectionMatrix * viewPosition;
-}
-`
+// Matrice de Bayer 8x8 (identique à la version shader, déjà divisée par 64).
+const BAYER_8X8 = [
+  0, 48 / 64, 12 / 64, 60 / 64, 3 / 64, 51 / 64, 15 / 64, 63 / 64,
+  32 / 64, 16 / 64, 44 / 64, 28 / 64, 35 / 64, 19 / 64, 47 / 64, 31 / 64,
+  8 / 64, 56 / 64, 4 / 64, 52 / 64, 11 / 64, 59 / 64, 7 / 64, 55 / 64,
+  40 / 64, 24 / 64, 36 / 64, 20 / 64, 43 / 64, 27 / 64, 39 / 64, 23 / 64,
+  2 / 64, 50 / 64, 14 / 64, 62 / 64, 1 / 64, 49 / 64, 13 / 64, 61 / 64,
+  34 / 64, 18 / 64, 46 / 64, 30 / 64, 33 / 64, 17 / 64, 45 / 64, 29 / 64,
+  10 / 64, 58 / 64, 6 / 64, 54 / 64, 9 / 64, 57 / 64, 5 / 64, 53 / 64,
+  42 / 64, 26 / 64, 38 / 64, 22 / 64, 41 / 64, 25 / 64, 37 / 64, 21 / 64,
+]
 
-const waveFragmentShader = `
-precision highp float;
-uniform vec2 resolution;
-uniform float time;
-uniform float waveSpeed;
-uniform float waveFrequency;
-uniform float waveAmplitude;
-uniform vec3 waveColor;
-uniform vec2 mousePos;
-uniform int enableMouseInteraction;
-uniform float mouseRadius;
+const OCTAVES = 4
+// Cellules de tramage max par frame (borne le coût quelle que soit la taille
+// du panneau) et pas de la grille de bruit (grossière, interpolée en bilinéaire
+// vers la grille de tramage — le bruit lui-même n'a pas besoin de résolution fine).
+const MAX_DITHER_CELLS = 90_000
+const NOISE_STEP = 4
 
-vec4 mod289(vec4 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
-vec4 permute(vec4 x) { return mod289(((x * 34.0) + 1.0) * x); }
-vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
-vec2 fade(vec2 t) { return t*t*t*(t*(t*6.0-15.0)+10.0); }
-
-float cnoise(vec2 P) {
-  vec4 Pi = floor(P.xyxy) + vec4(0.0,0.0,1.0,1.0);
-  vec4 Pf = fract(P.xyxy) - vec4(0.0,0.0,1.0,1.0);
-  Pi = mod289(Pi);
-  vec4 ix = Pi.xzxz;
-  vec4 iy = Pi.yyww;
-  vec4 fx = Pf.xzxz;
-  vec4 fy = Pf.yyww;
-  vec4 i = permute(permute(ix) + iy);
-  vec4 gx = fract(i * (1.0/41.0)) * 2.0 - 1.0;
-  vec4 gy = abs(gx) - 0.5;
-  vec4 tx = floor(gx + 0.5);
-  gx = gx - tx;
-  vec2 g00 = vec2(gx.x, gy.x);
-  vec2 g10 = vec2(gx.y, gy.y);
-  vec2 g01 = vec2(gx.z, gy.z);
-  vec2 g11 = vec2(gx.w, gy.w);
-  vec4 norm = taylorInvSqrt(vec4(dot(g00,g00), dot(g01,g01), dot(g10,g10), dot(g11,g11)));
-  g00 *= norm.x; g01 *= norm.y; g10 *= norm.z; g11 *= norm.w;
-  float n00 = dot(g00, vec2(fx.x, fy.x));
-  float n10 = dot(g10, vec2(fx.y, fy.y));
-  float n01 = dot(g01, vec2(fx.z, fy.z));
-  float n11 = dot(g11, vec2(fx.w, fy.w));
-  vec2 fade_xy = fade(Pf.xy);
-  vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
-  return 2.3 * mix(n_x.x, n_x.y, fade_xy.y);
-}
-
-const int OCTAVES = 4;
-float fbm(vec2 p) {
-  float value = 0.0;
-  float amp = 1.0;
-  float freq = waveFrequency;
-  for (int i = 0; i < OCTAVES; i++) {
-    value += amp * abs(cnoise(p));
-    p *= freq;
-    amp *= waveAmplitude;
-  }
-  return value;
-}
-
-float pattern(vec2 p) {
-  vec2 p2 = p - time * waveSpeed;
-  return fbm(p + fbm(p2));
-}
-
-void main() {
-  vec2 uv = gl_FragCoord.xy / resolution.xy;
-  uv -= 0.5;
-  uv.x *= resolution.x / resolution.y;
-  float f = pattern(uv);
-  if (enableMouseInteraction == 1) {
-    vec2 mouseNDC = (mousePos / resolution - 0.5) * vec2(1.0, -1.0);
-    mouseNDC.x *= resolution.x / resolution.y;
-    float dist = length(uv - mouseNDC);
-    float effect = 1.0 - smoothstep(0.0, mouseRadius, dist);
-    f -= 0.5 * effect;
-  }
-  vec3 col = mix(vec3(0.0), waveColor, f);
-  gl_FragColor = vec4(col, 1.0);
-}
-`
-
-const ditherFragmentShader = `
-precision highp float;
-uniform float colorNum;
-uniform float pixelSize;
-const float bayerMatrix8x8[64] = float[64](
-  0.0/64.0, 48.0/64.0, 12.0/64.0, 60.0/64.0,  3.0/64.0, 51.0/64.0, 15.0/64.0, 63.0/64.0,
-  32.0/64.0,16.0/64.0, 44.0/64.0, 28.0/64.0, 35.0/64.0,19.0/64.0, 47.0/64.0, 31.0/64.0,
-  8.0/64.0, 56.0/64.0,  4.0/64.0, 52.0/64.0, 11.0/64.0,59.0/64.0,  7.0/64.0, 55.0/64.0,
-  40.0/64.0,24.0/64.0, 36.0/64.0, 20.0/64.0, 43.0/64.0,27.0/64.0, 39.0/64.0, 23.0/64.0,
-  2.0/64.0, 50.0/64.0, 14.0/64.0, 62.0/64.0,  1.0/64.0,49.0/64.0, 13.0/64.0, 61.0/64.0,
-  34.0/64.0,18.0/64.0, 46.0/64.0, 30.0/64.0, 33.0/64.0,17.0/64.0, 45.0/64.0, 29.0/64.0,
-  10.0/64.0,58.0/64.0,  6.0/64.0, 54.0/64.0,  9.0/64.0,57.0/64.0,  5.0/64.0, 53.0/64.0,
-  42.0/64.0,26.0/64.0, 38.0/64.0, 22.0/64.0, 41.0/64.0,25.0/64.0, 37.0/64.0, 21.0/64.0
-);
-
-vec3 dither(vec2 uv, vec3 color) {
-  vec2 scaledCoord = floor(uv * resolution / pixelSize);
-  int x = int(mod(scaledCoord.x, 8.0));
-  int y = int(mod(scaledCoord.y, 8.0));
-  float threshold = bayerMatrix8x8[y * 8 + x] - 0.25;
-  float step = 1.0 / (colorNum - 1.0);
-  color += threshold * step;
-  float bias = 0.2;
-  color = clamp(color - bias, 0.0, 1.0);
-  return floor(color * (colorNum - 1.0) + 0.5) / (colorNum - 1.0);
-}
-
-void mainImage(in vec4 inputColor, in vec2 uv, out vec4 outputColor) {
-  vec2 normalizedPixelSize = pixelSize / resolution;
-  vec2 uvPixel = normalizedPixelSize * floor(uv / normalizedPixelSize);
-  vec4 color = texture2D(inputBuffer, uvPixel);
-  color.rgb = dither(uv, color.rgb);
-  outputColor = color;
-}
-`
-
-class RetroEffectImpl extends Effect {
-  public uniforms: Map<string, THREE.Uniform<number>>
-  constructor() {
-    const uniforms = new Map<string, THREE.Uniform<number>>([
-      ["colorNum", new THREE.Uniform(4.0)],
-      ["pixelSize", new THREE.Uniform(2.0)],
-    ])
-    super("RetroEffect", ditherFragmentShader, { uniforms })
-    this.uniforms = uniforms
-  }
-  set colorNum(value: number) {
-    this.uniforms.get("colorNum")!.value = value
-  }
-  get colorNum(): number {
-    return this.uniforms.get("colorNum")!.value
-  }
-  set pixelSize(value: number) {
-    this.uniforms.get("pixelSize")!.value = value
-  }
-  get pixelSize(): number {
-    return this.uniforms.get("pixelSize")!.value
-  }
-}
-
-const WrappedRetroEffect = wrapEffect(RetroEffectImpl)
-
-const RetroEffect = forwardRef<RetroEffectImpl, { colorNum: number; pixelSize: number }>(
-  ({ colorNum, pixelSize }, ref) => (
-    <WrappedRetroEffect ref={ref} colorNum={colorNum} pixelSize={pixelSize} />
-  )
-)
-
-RetroEffect.displayName = "RetroEffect"
-
-interface WaveUniforms {
-  [key: string]: THREE.Uniform<unknown>
-}
-
-interface DitheredWavesProps {
-  waveSpeed: number
-  waveFrequency: number
-  waveAmplitude: number
-  waveColor: [number, number, number]
-  colorNum: number
-  pixelSize: number
-  disableAnimation: boolean
-  enableMouseInteraction: boolean
-  mouseRadius: number
-}
-
-function DitheredWaves({
-  waveSpeed,
-  waveFrequency,
-  waveAmplitude,
-  waveColor,
-  colorNum,
-  pixelSize,
-  disableAnimation,
-  enableMouseInteraction,
-  mouseRadius,
-}: DitheredWavesProps) {
-  const mesh = useRef<THREE.Mesh>(null)
-  const materialRef = useRef<THREE.ShaderMaterial>(null)
-  const mouseRef = useRef(new THREE.Vector2())
-  const { viewport, size, gl } = useThree()
-
-  // Objet de construction uniquement : three (r185) CLONE les uniforms passés
-  // au ShaderMaterial — toute mise à jour doit muter materialRef.current.uniforms.
-  const initialUniformsRef = useRef<WaveUniforms>({
-    time: new THREE.Uniform(0),
-    resolution: new THREE.Uniform(new THREE.Vector2(0, 0)),
-    waveSpeed: new THREE.Uniform(waveSpeed),
-    waveFrequency: new THREE.Uniform(waveFrequency),
-    waveAmplitude: new THREE.Uniform(waveAmplitude),
-    waveColor: new THREE.Uniform(new THREE.Color(...waveColor)),
-    mousePos: new THREE.Uniform(new THREE.Vector2(0, 0)),
-    enableMouseInteraction: new THREE.Uniform(enableMouseInteraction ? 1 : 0),
-    mouseRadius: new THREE.Uniform(mouseRadius),
-  })
-
-  useEffect(() => {
-    const u = materialRef.current?.uniforms
-    if (!u) return
-    const dpr = gl.getPixelRatio()
-    const newWidth = Math.floor(size.width * dpr)
-    const newHeight = Math.floor(size.height * dpr)
-    const currentRes = u.resolution.value as THREE.Vector2
-    if (currentRes.x !== newWidth || currentRes.y !== newHeight) {
-      currentRes.set(newWidth, newHeight)
-    }
-  }, [size, gl])
-
-  const prevColor = useRef([...waveColor])
-  useFrame(({ clock }) => {
-    const u = materialRef.current?.uniforms
-    if (!u) return
-
-    if (!disableAnimation) {
-      u.time.value = clock.getElapsedTime()
-    }
-
-    u.waveSpeed.value = waveSpeed
-    u.waveFrequency.value = waveFrequency
-    u.waveAmplitude.value = waveAmplitude
-
-    if (!prevColor.current.every((v, i) => v === waveColor[i])) {
-      ;(u.waveColor.value as THREE.Color).set(...waveColor)
-      prevColor.current = [...waveColor]
-    }
-
-    u.enableMouseInteraction.value = enableMouseInteraction ? 1 : 0
-    u.mouseRadius.value = mouseRadius
-
-    if (enableMouseInteraction) {
-      ;(u.mousePos.value as THREE.Vector2).copy(mouseRef.current)
-    }
-  })
-
-  const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
-    if (!enableMouseInteraction) return
-    const rect = gl.domElement.getBoundingClientRect()
-    const dpr = gl.getPixelRatio()
-    mouseRef.current.set((e.clientX - rect.left) * dpr, (e.clientY - rect.top) * dpr)
-  }
-
-  return (
-    <>
-      <mesh ref={mesh} scale={[viewport.width, viewport.height, 1]}>
-        <planeGeometry args={[1, 1]} />
-        <shaderMaterial
-          ref={materialRef}
-          vertexShader={waveVertexShader}
-          fragmentShader={waveFragmentShader}
-          uniforms={initialUniformsRef.current}
-        />
-      </mesh>
-
-      <EffectComposer>
-        <RetroEffect colorNum={colorNum} pixelSize={pixelSize} />
-      </EffectComposer>
-
-      <mesh
-        onPointerMove={handlePointerMove}
-        position={[0, 0, 0.01]}
-        scale={[viewport.width, viewport.height, 1]}
-        visible={false}
-      >
-        <planeGeometry args={[1, 1]} />
-        <meshBasicMaterial transparent opacity={0} />
-      </mesh>
-    </>
-  )
+function clamp01(v: number): number {
+  return v < 0 ? 0 : v > 1 ? 1 : v
 }
 
 interface DitherWavesProps {
@@ -297,6 +44,8 @@ interface DitherWavesProps {
   disableAnimation?: boolean
   enableMouseInteraction?: boolean
   mouseRadius?: number
+  /** true = boucle de rendu coupée (section hors viewport) : 0 CPU/GPU. */
+  paused?: boolean
 }
 
 export default function DitherWaves({
@@ -310,25 +59,265 @@ export default function DitherWaves({
   disableAnimation = false,
   enableMouseInteraction = false,
   mouseRadius = 0.8,
+  paused = false,
 }: DitherWavesProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const controlsRef = useRef<{ start: () => void; stop: () => void } | null>(null)
+
+  // Les derniers props sont lus par la boucle de rendu via cette ref : on évite
+  // de recréer tout le setup (canvas, ResizeObserver) à chaque changement de prop.
+  const propsRef = useRef({
+    waveSpeed,
+    waveFrequency,
+    waveAmplitude,
+    waveColor,
+    colorNum,
+    pixelSize,
+    disableAnimation,
+    enableMouseInteraction,
+    mouseRadius,
+  })
+  propsRef.current = {
+    waveSpeed,
+    waveFrequency,
+    waveAmplitude,
+    waveColor,
+    colorNum,
+    pixelSize,
+    disableAnimation,
+    enableMouseInteraction,
+    mouseRadius,
+  }
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const parent = canvas?.parentElement
+    if (!canvas || !parent) return
+    const ctx = canvas.getContext("2d", { alpha: false })
+    if (!ctx) return
+
+    const reducedMotion =
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
+
+    let gridW = 0
+    let gridH = 0
+    let noiseGridW = 0
+    let noiseGridH = 0
+    let imageData: ImageData | null = null
+    let noiseCache: Float32Array | null = null
+
+    const mouse = { x: 0, y: 0, active: false }
+    const timeRef = { value: 0 }
+    const rafRef = { id: 0 }
+    const lastTsRef = { value: null as number | null }
+
+    function resize() {
+      const rect = parent!.getBoundingClientRect()
+      const cssW = Math.max(1, Math.round(rect.width))
+      const cssH = Math.max(1, Math.round(rect.height))
+
+      let ps = propsRef.current.pixelSize
+      let w = Math.max(1, Math.round(cssW / ps))
+      let h = Math.max(1, Math.round(cssH / ps))
+      const cells = w * h
+      if (cells > MAX_DITHER_CELLS) {
+        ps *= Math.sqrt(cells / MAX_DITHER_CELLS)
+        w = Math.max(1, Math.round(cssW / ps))
+        h = Math.max(1, Math.round(cssH / ps))
+      }
+
+      gridW = w
+      gridH = h
+      noiseGridW = Math.max(2, Math.ceil(gridW / NOISE_STEP) + 1)
+      noiseGridH = Math.max(2, Math.ceil(gridH / NOISE_STEP) + 1)
+      canvas!.width = gridW
+      canvas!.height = gridH
+      imageData = ctx!.createImageData(gridW, gridH)
+      noiseCache = new Float32Array(noiseGridW * noiseGridH)
+    }
+
+    // fbm(p) = somme de |bruit(p)| sur OCTAVES octaves, amplitude/fréquence
+    // pilotées par les props -> même structure que le fbm GLSL d'origine.
+    function fbmAt(x: number, y: number): number {
+      let value = 0
+      let amp = 1
+      const freq = propsRef.current.waveFrequency
+      let px = x
+      let py = y
+      for (let i = 0; i < OCTAVES; i++) {
+        value += amp * Math.abs(noise2D(px, py))
+        px *= freq
+        py *= freq
+        amp *= propsRef.current.waveAmplitude
+      }
+      return value
+    }
+
+    // pattern(p) = fbm(p + fbm(p - time*vitesse)) : déformation de domaine,
+    // même formule que le shader d'origine.
+    function patternAt(x: number, y: number, time: number): number {
+      const speed = propsRef.current.waveSpeed
+      const warp = fbmAt(x - time * speed, y - time * speed)
+      return fbmAt(x + warp, y + warp)
+    }
+
+    function draw(time: number) {
+      if (!imageData || !noiseCache || gridW === 0 || gridH === 0) return
+      const { waveColor, colorNum, enableMouseInteraction, mouseRadius } = propsRef.current
+      const aspect = gridW / gridH
+
+      // 1) bruit sur la grille grossière
+      for (let ny = 0; ny < noiseGridH; ny++) {
+        for (let nx = 0; nx < noiseGridW; nx++) {
+          let u = (nx * NOISE_STEP) / gridW - 0.5
+          const v = (ny * NOISE_STEP) / gridH - 0.5
+          u *= aspect
+          noiseCache[ny * noiseGridW + nx] = patternAt(u, v, time)
+        }
+      }
+
+      // 2) tramage + quantification par cellule, avec interpolation bilinéaire
+      // de la grille de bruit vers la grille de tramage (fine).
+      const data = imageData.data
+      const [wr, wg, wb] = waveColor
+      const step = 1 / (colorNum - 1)
+      const bias = 0.2
+
+      for (let y = 0; y < gridH; y++) {
+        const gy = y / NOISE_STEP
+        const y0 = Math.min(noiseGridH - 1, Math.floor(gy))
+        const y1 = Math.min(noiseGridH - 1, y0 + 1)
+        const fy = gy - y0
+        const by = y & 7
+
+        for (let x = 0; x < gridW; x++) {
+          const gx = x / NOISE_STEP
+          const x0 = Math.min(noiseGridW - 1, Math.floor(gx))
+          const x1 = Math.min(noiseGridW - 1, x0 + 1)
+          const fx = gx - x0
+
+          const n00 = noiseCache[y0 * noiseGridW + x0]
+          const n10 = noiseCache[y0 * noiseGridW + x1]
+          const n01 = noiseCache[y1 * noiseGridW + x0]
+          const n11 = noiseCache[y1 * noiseGridW + x1]
+          const nx0 = n00 + (n10 - n00) * fx
+          const nx1 = n01 + (n11 - n01) * fx
+          let f = nx0 + (nx1 - nx0) * fy
+
+          if (enableMouseInteraction && mouse.active) {
+            let u = x / gridW - 0.5
+            const v = y / gridH - 0.5
+            u *= aspect
+            const dist = Math.hypot(u - mouse.x, v - mouse.y)
+            const t = clamp01(1 - dist / mouseRadius)
+            f -= 0.5 * t * t * (3 - 2 * t)
+          }
+
+          const threshold = BAYER_8X8[by * 8 + (x & 7)] - 0.25
+
+          const idx = (y * gridW + x) * 4
+          data[idx] =
+            Math.floor(
+              (clamp01(wr * f + threshold * step - bias) * (colorNum - 1) + 0.5)
+            ) *
+            step *
+            255
+          data[idx + 1] =
+            Math.floor(
+              (clamp01(wg * f + threshold * step - bias) * (colorNum - 1) + 0.5)
+            ) *
+            step *
+            255
+          data[idx + 2] =
+            Math.floor(
+              (clamp01(wb * f + threshold * step - bias) * (colorNum - 1) + 0.5)
+            ) *
+            step *
+            255
+          data[idx + 3] = 255
+        }
+      }
+      ctx!.putImageData(imageData, 0, 0)
+    }
+
+    function loop(ts: number) {
+      if (lastTsRef.value == null) lastTsRef.value = ts
+      const dt = (ts - lastTsRef.value) / 1000
+      lastTsRef.value = ts
+      if (!propsRef.current.disableAnimation && !reducedMotion) {
+        timeRef.value += dt
+      }
+      draw(timeRef.value)
+      rafRef.id = requestAnimationFrame(loop)
+    }
+
+    function start() {
+      if (rafRef.id) return
+      const staticFrame = propsRef.current.disableAnimation || reducedMotion
+      if (staticFrame) {
+        draw(timeRef.value)
+        return
+      }
+      lastTsRef.value = null
+      rafRef.id = requestAnimationFrame(loop)
+    }
+
+    function stop() {
+      if (rafRef.id) {
+        cancelAnimationFrame(rafRef.id)
+        rafRef.id = 0
+      }
+    }
+
+    function handlePointerMove(e: PointerEvent) {
+      const rect = canvas!.getBoundingClientRect()
+      const aspect = gridW / gridH
+      mouse.x = ((e.clientX - rect.left) / rect.width - 0.5) * aspect
+      mouse.y = (e.clientY - rect.top) / rect.height - 0.5
+      mouse.active = true
+    }
+    function handlePointerLeave() {
+      mouse.active = false
+    }
+
+    resize()
+    draw(timeRef.value)
+    controlsRef.current = { start, stop }
+
+    const ro = new ResizeObserver(() => {
+      resize()
+      draw(timeRef.value)
+    })
+    ro.observe(parent)
+
+    canvas.addEventListener("pointermove", handlePointerMove)
+    canvas.addEventListener("pointerleave", handlePointerLeave)
+
+    if (!paused) start()
+
+    return () => {
+      stop()
+      ro.disconnect()
+      canvas.removeEventListener("pointermove", handlePointerMove)
+      canvas.removeEventListener("pointerleave", handlePointerLeave)
+      controlsRef.current = null
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setup mount-only, `paused` géré par l'effet ci-dessous
+  }, [])
+
+  // `paused` pilote juste start/stop de la boucle déjà en place (pas de
+  // re-setup du canvas/ResizeObserver à chaque bascule viewport).
+  useEffect(() => {
+    if (!controlsRef.current) return
+    if (paused) controlsRef.current.stop()
+    else controlsRef.current.start()
+  }, [paused])
+
   return (
-    <Canvas
-      className="relative h-full w-full"
-      camera={{ position: [0, 0, 6] }}
-      dpr={1}
-      gl={{ antialias: true, preserveDrawingBuffer: true }}
-    >
-      <DitheredWaves
-        waveSpeed={waveSpeed}
-        waveFrequency={waveFrequency}
-        waveAmplitude={waveAmplitude}
-        waveColor={waveColor}
-        colorNum={colorNum}
-        pixelSize={pixelSize}
-        disableAnimation={disableAnimation}
-        enableMouseInteraction={enableMouseInteraction}
-        mouseRadius={mouseRadius}
-      />
-    </Canvas>
+    <canvas
+      ref={canvasRef}
+      className="h-full w-full"
+      style={{ imageRendering: "pixelated" }}
+    />
   )
 }

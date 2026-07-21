@@ -20,6 +20,9 @@ export function Team() {
                   <img
                     src={member.photo}
                     alt={member.name}
+                    width={112}
+                    height={112}
+                    loading="lazy"
                     className="size-14 rounded-full border object-cover"
                   />
                   <div>

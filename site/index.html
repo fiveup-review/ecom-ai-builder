@@ -2,12 +2,73 @@
 <html lang="fr" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050607" />
     <title>ECOM AI BUILDER — Boutiques Shopify générées par IA</title>
+    <meta
+      name="description"
+      content="Génère des boutiques Shopify par IA : recherche produit, identité de marque et visuels IA, puis boutique livrée. App macOS et Windows, essai gratuit."
+    />
+    <link rel="canonical" href="https://ecom-ai-builder.com/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ECOM AI BUILDER" />
+    <meta property="og:title" content="ECOM AI BUILDER — Boutiques Shopify générées par IA" />
+    <meta
+      property="og:description"
+      content="De la recherche produit à ta boutique Shopify complète, piloté par l'IA. Tu valides chaque étape, elle fait le reste."
+    />
+    <meta property="og:url" content="https://ecom-ai-builder.com/" />
+    <meta property="og:image" content="https://ecom-ai-builder.com/og-cover.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ECOM AI BUILDER — Boutiques Shopify générées par IA" />
+    <meta
+      name="twitter:description"
+      content="De la recherche produit à ta boutique Shopify complète, piloté par l'IA."
+    />
+    <meta name="twitter:image" content="https://ecom-ai-builder.com/og-cover.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "ECOM AI BUILDER",
+        "url": "https://ecom-ai-builder.com/",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "macOS, Windows",
+        "description": "Application desktop qui automatise le test de produits e-commerce : recherche produit, identité de marque, visuels IA et boutique Shopify livrée. Tu valides chaque étape.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR",
+          "description": "Essai gratuit, sans carte bancaire."
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main style="font-family: sans-serif; max-width: 40rem; margin: 4rem auto; padding: 0 1rem">
+        <h1>ECOM AI BUILDER — Boutiques Shopify générées par IA</h1>
+        <p>
+          De la recherche produit à ta boutique Shopify complète, piloté par l'IA.
+          Tu valides chaque étape, elle fait le reste. App macOS et Windows, essai gratuit.
+        </p>
+        <p>
+          <a href="https://github.com/fiveup-review/ecom-ai-builder/releases/latest">Télécharger l'app</a>
+        </p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

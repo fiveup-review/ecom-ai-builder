@@ -123,11 +123,78 @@
   --sidebar-ring: #39ff5a;
 }
 
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+  html {
+    scroll-padding-top: 5rem; /* ancres non masquées sous le header fixe */
+  }
+}
+
+/* Reveal (voir src/components/Reveal.tsx) : masquage/animation posés côté client
+   uniquement sur le below-the-fold. Aucun style au SSR = LCP visible au 1er paint. */
+.reveal-init {
+  opacity: 0;
+}
+.reveal-init.reveal-in {
+  animation: reveal-in 0.5s ease forwards;
+  animation-delay: var(--reveal-delay, 0s);
+}
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Barre de progression de l'autoplay Pipeline (CSS, remplace motion). */
+@keyframes pipeline-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Entrée du hero au chargement (CSS pur, pas de JS, pas de scroll).
+   Appliqué à tout le hero SAUF le H1 (élément LCP -> reste peint immédiatement).
+   opacity + transform uniquement -> zéro CLS. Le délai réutilise --reveal-delay. */
+.hero-rise {
+  animation: hero-in 0.55s ease both;
+  animation-delay: var(--reveal-delay, 0s);
+}
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-init {
+    opacity: 1;
+  }
+  .hero-rise {
+    animation: none;
   }
 }
