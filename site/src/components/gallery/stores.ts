@@ -11,6 +11,6 @@ export type Store = {
 
 export const GALLERY_STORES: Store[] = [
   { name: "Nova", niche: "Skincare", tint: "violet" },
-  { name: "OhMySmile", niche: "Soin dentaire", tint: "violet", src: "/galerie/ohmysmile.webp" },
+  { name: "Fresk", niche: "Ventilateur portable", tint: "amber", src: "/galerie/fresk.jpg" },
   { name: "Maison Lure", niche: "Déco maison", tint: "amber" },
 ]

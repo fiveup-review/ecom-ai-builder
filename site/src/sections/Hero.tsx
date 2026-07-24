@@ -25,7 +25,7 @@ export function Hero() {
         <Reveal delay={0.12} className="hero-rise">
           <p className="max-w-2xl text-lg text-muted-foreground text-pretty sm:text-xl">
             De la recherche produit à ta boutique Shopify complète, pilotée par
-            l'IA. T'as juste à valider les étapes.
+            l'IA.
           </p>
         </Reveal>
         <Reveal delay={0.2} className="hero-rise flex flex-col items-center gap-3">
