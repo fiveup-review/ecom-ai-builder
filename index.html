@@ -2136,10 +2136,12 @@
                 <small>.dmg · Apple Silicon &amp; Intel</small>
               </div>
             </div>
-            <a class="btn btn-primary" href="https://github.com/fiveup-review/ecom-ai-builder/releases/latest/download/ECOM-AI-BUILDER-macOS-AppleSilicon.dmg" id="btn-mac"
+            <!-- /i/dl/* = proxifié vers le serveur (tracking affiliation via le
+                 cookie eab_aff) puis 302 vers l'asset GitHub à nom fixe. -->
+            <a class="btn btn-primary" href="/i/dl/mac-arm" id="btn-mac"
               >Mac Apple Silicon (M1+)</a
             >
-            <a class="btn btn-ghost" href="https://github.com/fiveup-review/ecom-ai-builder/releases/latest/download/ECOM-AI-BUILDER-macOS-Intel.dmg" id="btn-mac-intel" style="margin-top: 10px"
+            <a class="btn btn-ghost" href="/i/dl/mac-intel" id="btn-mac-intel" style="margin-top: 10px"
               >Mac Intel</a
             >
             <div class="meta">
@@ -2156,7 +2158,7 @@
                 <small>.exe · installeur</small>
               </div>
             </div>
-            <a class="btn btn-primary" href="https://github.com/fiveup-review/ecom-ai-builder/releases/latest/download/ECOM-AI-BUILDER-Windows.exe" id="btn-win"
+            <a class="btn btn-primary" href="/i/dl/windows" id="btn-win"
               >Télécharger pour Windows</a
             >
             <div class="meta">
@@ -2292,6 +2294,40 @@
     </footer>
 
     <script>
+      // --- Affiliation : ?ref=<code> -> cookie eab_aff (90 j, .ecom-ai-builder.com)
+      // + beacon VISIT vers /i/e (proxifié serveur ; nom neutre, « track » est
+      // filtré par les adblockers). Le cookie est relu par le serveur au download
+      // (/i/dl/*) et au login de l'app (même navigateur, même domaine) ->
+      // attribution first-touch du compte, puis du paiement Whop. Fallback : le
+      // code est aussi ajouté en ?ref= aux liens download (cookie bloqué/expiré),
+      // et le serveur re-pose le cookie en HTTP (Safari ITP plafonne le JS à 7 j).
+      (function () {
+        try {
+          var fromUrl = new URLSearchParams(location.search).get("ref");
+          var fromCookie = (document.cookie.match(/(?:^|;\s*)eab_aff=([^;]+)/) || [])[1];
+          var code = (fromUrl || (fromCookie && decodeURIComponent(fromCookie)) || "").trim().toLowerCase();
+          if (!/^[a-z0-9_-]{2,32}$/.test(code)) return;
+          var cookie =
+            "eab_aff=" + encodeURIComponent(code) +
+            "; max-age=7776000; path=/; SameSite=Lax";
+          if (/ecom-ai-builder\.com$/.test(location.hostname))
+            cookie += "; domain=.ecom-ai-builder.com; Secure";
+          document.cookie = cookie;
+          // Fallback query sur les boutons download (si le cookie saute).
+          ["btn-mac", "btn-mac-intel", "btn-win"].forEach(function (id) {
+            var a = document.getElementById(id);
+            if (a) a.href = a.getAttribute("href").split("?")[0] + "?ref=" + encodeURIComponent(code);
+          });
+          // Beacon VISIT uniquement sur une vraie arrivée via lien affilié.
+          if (fromUrl) {
+            var payload = JSON.stringify({ code: code });
+            if (navigator.sendBeacon) navigator.sendBeacon("/i/e", payload);
+            else
+              fetch("/i/e", { method: "POST", body: payload, keepalive: true }).catch(function () {});
+          }
+        } catch (e) {}
+      })();
+
       // --- Détection OS : met l'OS natif en avant ---
       (function () {
         var p =
