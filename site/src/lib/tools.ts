@@ -12,7 +12,6 @@ import {
   Shrink,
   Star,
   TrendingUp,
-  Trophy,
   type LucideIcon,
 } from "lucide-react"
 
@@ -45,12 +44,6 @@ export const TOOL_CATEGORIES: { label: string; tools: Tool[] }[] = [
         description: "Extrais tous les visuels d'une page",
         href: "/outils/image-scraper.html",
         badge: "beta",
-      },
-      {
-        icon: Trophy,
-        name: "Produit gagnant",
-        description: "Valide le potentiel de ton produit",
-        href: "/outils/produit-gagnant.html",
       },
     ],
   },
