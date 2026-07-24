@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import { ArrowUpRight } from "lucide-react"
 import { Nav } from "@/sections/Nav"
 import { Footer } from "@/sections/Footer"
@@ -22,13 +23,32 @@ function Badge({ badge }: { badge: ToolBadge }) {
   )
 }
 
+// Mode « embed » (?embed=1, iframe de l'app desktop) : pas de nav/footer/CTA —
+// l'app a déjà sa propre nav. Mémorisé en sessionStorage pour survivre à la
+// navigation interne (les liens outils n'ont pas le param), même mécanique que
+// assets/site-header.js sur les pages outils statiques.
+function useEmbedMode(): boolean {
+  const [embed, setEmbed] = useState(false)
+  useEffect(() => {
+    const fromParam = /[?&](embed|app)=1\b/.test(location.search)
+    if (fromParam) {
+      try { sessionStorage.setItem("eab_embed", "1") } catch { /* privé */ }
+    }
+    let on = fromParam
+    try { if (sessionStorage.getItem("eab_embed") === "1") on = true } catch { /* privé */ }
+    setEmbed(on)
+  }, [])
+  return embed
+}
+
 export default function Outils() {
+  const embed = useEmbedMode()
   return (
     <>
-      <Nav />
+      {!embed && <Nav />}
       <main>
         {/* Hero */}
-        <section className="relative overflow-hidden pt-40 pb-16">
+        <section className={`relative overflow-hidden pb-16 ${embed ? "pt-14" : "pt-40"}`}>
           <DotPattern />
           <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 text-center sm:px-6">
             <Reveal delay={0.05}>
@@ -89,10 +109,10 @@ export default function Outils() {
           ))}
         </section>
 
-        {/* Même fin de page que la landing */}
-        <FinalCta />
+        {/* Même fin de page que la landing (masquée dans l'app) */}
+        {!embed && <FinalCta />}
       </main>
-      <Footer />
+      {!embed && <Footer />}
     </>
   )
 }
