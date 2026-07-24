@@ -9,8 +9,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Fonds (tokens site : --bg #05070a, --panel rgba(18,26,22,.45)) */
-  --bg:            #05070a;
+  /* Fonds (tokens NOUVEAU site : --bg #050607, --panel rgba(18,26,22,.45)) */
+  --bg:            #050607;
   --bg-2:          #070b10;
   --card:          #0a1310;
   --card-2:        #0c1813;
@@ -39,8 +39,9 @@
   --warn:          #ffb547;
   --ok:            #39ff5a;
 
-  --radius:        16px;
-  --radius-sm:     11px;
+  /* Rayon aligné sur le nouveau site (--radius: 0.75rem) */
+  --radius:        12px;
+  --radius-sm:     9px;
 
   --font:          "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-display:  "Space Grotesk", var(--font);

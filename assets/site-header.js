@@ -23,10 +23,11 @@
         "<span>ECOM <b>AI</b> BUILDER</span>" +
       "</a>" +
       '<div class="site-nav-links">' +
-        '<a href="/#features">Fonctionnalités</a>' +
-        '<a href="/#how">Comment ça marche</a>' +
+        // Ancres du NOUVEAU site (site/src/sections/*, ids: pipeline/setup/galerie/avis/faq/download)
+        '<a href="/#pipeline">La pipeline</a>' +
+        '<a href="/#setup">Installation</a>' +
+        '<a href="/#galerie">Boutiques</a>' +
         '<a href="/#avis">Avis</a>' +
-        '<a href="/#equipe">L\'équipe</a>' +
         '<a href="/#faq">FAQ</a>' +
         '<a href="/outils"' + (onOutils ? ' class="is-active"' : "") + ">Outils</a>" +
         '<a href="/#download">Télécharger</a>' +

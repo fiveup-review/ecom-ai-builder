@@ -51,9 +51,9 @@ export function Pipeline() {
       }}
     >
       <SectionHeading
-        eyebrow="Le pipeline"
+        eyebrow="La pipeline"
         title="Une boutique complète, en 4 étapes."
-        description="L'app enchaîne tout le travail à ta place. Toi, tu valides."
+        description="L'app te guide étape par étape. Toi, tu te concentres sur ce qui vend."
       />
 
       <div className="mt-16 overflow-hidden rounded-xl border bg-card">
@@ -151,7 +151,7 @@ export function Pipeline() {
       <Reveal className="mt-10 flex justify-center">
         <Button asChild variant="outline" size="lg" className="h-12 px-7 text-base">
           <a href="/outils/">
-            Voir toutes les features
+            Nos outils gratuits
             <ArrowRight />
           </a>
         </Button>

@@ -12,9 +12,9 @@ export function PipelineRows() {
   return (
     <section id="pipeline" className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
       <SectionHeading
-        eyebrow="Le pipeline"
+        eyebrow="La pipeline"
         title="Une boutique complète, en 4 étapes."
-        description="L'app enchaîne tout le travail à ta place. Toi, tu valides."
+        description="L'app te guide étape par étape. Toi, tu te concentres sur ce qui vend."
       />
 
       <Reveal className="mt-16 sm:mt-20">
@@ -24,7 +24,7 @@ export function PipelineRows() {
       <Reveal className="mt-16 flex justify-center">
         <Button asChild variant="outline" size="lg" className="h-12 px-7 text-base">
           <a href="/outils/">
-            Voir toutes les features
+            Nos outils gratuits
             <ArrowRight />
           </a>
         </Button>

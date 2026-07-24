@@ -111,8 +111,8 @@ export function Setup() {
     <section id="setup" className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
       <SectionHeading
         eyebrow="En 3 étapes"
-        title="Démarre en quelques minutes."
-        description="Pas de crédits à acheter, pas de config serveur : tes abonnements font tourner la machine."
+        title="Installée en 2 minutes."
+        description="Aucun frais en plus de tes abonnements."
       />
       <div className="mt-16 grid gap-5 lg:grid-cols-3">
         {SETUP_STEPS.map((step, i) => {

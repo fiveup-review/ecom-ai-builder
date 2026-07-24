@@ -3,6 +3,10 @@ import type { ComponentType } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import { captureAffiliate } from './lib/affiliate.ts'
+
+// Affiliation (?ref= -> cookie + beacon) : client uniquement, avant le rendu.
+captureAffiliate()
 
 // Pas de router : pages résolues par pathname (même logique que entry-server).
 // Home = App (statique, hydratée au prerender). Les pages secondaires sont

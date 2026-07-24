@@ -20,9 +20,9 @@ export function Gallery() {
       </div>
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading
-          eyebrow="Galerie Réel"
+          eyebrow="Nos boutiques"
           title="Des boutiques prêtes à vendre."
-          description="Générées de A à Z par l'app. Voici ce qui sort du pipeline."
+          description="Générées à 100 % par l'app. Lance ta pipeline pour obtenir le même résultat."
         />
         <Reveal className="mt-16">
           <FanVariant />

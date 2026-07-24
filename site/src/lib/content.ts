@@ -1,12 +1,16 @@
 import { Zap, Palette, Clock } from "lucide-react"
 
+// Vidéo du Hero (encart AppWindow) — hébergée sur R2 (590 Mo source compressée,
+// jamais commitée en git).
+export const HERO_VIDEO_URL =
+  "https://pub-4175e1e9d33f4e1b947c8a89115893a5.r2.dev/landing/paul-henouna.mp4"
+
+// Downloads via /i/dl/* (proxifié serveur) : log l'event DOWNLOAD attribué au
+// cookie d'affiliation eab_aff puis 302 vers l'asset GitHub à nom fixe.
 export const LINKS = {
-  macSilicon:
-    "https://github.com/fiveup-review/ecom-ai-builder/releases/latest/download/ECOM-AI-BUILDER-macOS-AppleSilicon.dmg",
-  macIntel:
-    "https://github.com/fiveup-review/ecom-ai-builder/releases/latest/download/ECOM-AI-BUILDER-macOS-Intel.dmg",
-  windows:
-    "https://github.com/fiveup-review/ecom-ai-builder/releases/latest/download/ECOM-AI-BUILDER-Windows.exe",
+  macSilicon: "/i/dl/mac-arm",
+  macIntel: "/i/dl/mac-intel",
+  windows: "/i/dl/windows",
   discord: "https://whop.com/joined/ecom-ai-builder/",
 }
 
@@ -41,8 +45,7 @@ export const SETUP_STEPS = [
   {
     number: "01",
     title: "Télécharge l'app",
-    description:
-      "Mac ou Windows. Connexion Google ou Discord — ou essaie sans compte. Gratuit, sans carte.",
+    description: "Gratuit, sans inscription, pour Mac ou Windows.",
   },
   {
     number: "02",

@@ -6,6 +6,7 @@ import { Reveal } from "@/components/Reveal"
 import { Eyebrow } from "@/components/SectionHeading"
 import { DiscordIcon } from "@/components/DiscordIcon"
 import { LINKS } from "@/lib/content"
+import { HeroVideo } from "@/components/HeroVideo"
 
 export function Hero() {
   return (
@@ -23,8 +24,8 @@ export function Hero() {
         </Reveal>
         <Reveal delay={0.12} className="hero-rise">
           <p className="max-w-2xl text-lg text-muted-foreground text-pretty sm:text-xl">
-            De la recherche produit à ta boutique Shopify complète, piloté par
-            l'IA. Tu valides chaque étape, elle fait le reste.
+            De la recherche produit à ta boutique Shopify complète, pilotée par
+            l'IA. T'as juste à valider les étapes.
           </p>
         </Reveal>
         <Reveal delay={0.2} className="hero-rise flex flex-col items-center gap-3">
@@ -55,11 +56,7 @@ export function Hero() {
         </Reveal>
         <Reveal delay={0.28} className="hero-rise mt-8 w-full">
           <AppWindow title="ecom-ai-builder" className="w-full">
-            <div className="flex aspect-[16/10] w-full items-center justify-center bg-secondary/30">
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Aperçu de l'app à venir
-              </span>
-            </div>
+            <HeroVideo />
           </AppWindow>
         </Reveal>
       </div>
