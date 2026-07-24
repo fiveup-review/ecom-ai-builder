@@ -2295,14 +2295,17 @@
 
     <script>
       // --- Affiliation : ?ref=<code> -> cookie eab_aff (90 j, .ecom-ai-builder.com)
-      // + beacon VISIT vers /i/track (proxifié serveur). Le cookie est relu par le
-      // serveur au download (/i/dl/*) et au login de l'app (même navigateur, même
-      // domaine) -> attribution first-touch du compte, puis du paiement Whop.
+      // + beacon VISIT vers /i/e (proxifié serveur ; nom neutre, « track » est
+      // filtré par les adblockers). Le cookie est relu par le serveur au download
+      // (/i/dl/*) et au login de l'app (même navigateur, même domaine) ->
+      // attribution first-touch du compte, puis du paiement Whop. Fallback : le
+      // code est aussi ajouté en ?ref= aux liens download (cookie bloqué/expiré),
+      // et le serveur re-pose le cookie en HTTP (Safari ITP plafonne le JS à 7 j).
       (function () {
         try {
-          var code = new URLSearchParams(location.search).get("ref");
-          if (!code) return;
-          code = code.trim().toLowerCase();
+          var fromUrl = new URLSearchParams(location.search).get("ref");
+          var fromCookie = (document.cookie.match(/(?:^|;\s*)eab_aff=([^;]+)/) || [])[1];
+          var code = (fromUrl || (fromCookie && decodeURIComponent(fromCookie)) || "").trim().toLowerCase();
           if (!/^[a-z0-9_-]{2,32}$/.test(code)) return;
           var cookie =
             "eab_aff=" + encodeURIComponent(code) +
@@ -2310,10 +2313,18 @@
           if (/ecom-ai-builder\.com$/.test(location.hostname))
             cookie += "; domain=.ecom-ai-builder.com; Secure";
           document.cookie = cookie;
-          var payload = JSON.stringify({ code: code });
-          if (navigator.sendBeacon) navigator.sendBeacon("/i/track", payload);
-          else
-            fetch("/i/track", { method: "POST", body: payload, keepalive: true }).catch(function () {});
+          // Fallback query sur les boutons download (si le cookie saute).
+          ["btn-mac", "btn-mac-intel", "btn-win"].forEach(function (id) {
+            var a = document.getElementById(id);
+            if (a) a.href = a.getAttribute("href").split("?")[0] + "?ref=" + encodeURIComponent(code);
+          });
+          // Beacon VISIT uniquement sur une vraie arrivée via lien affilié.
+          if (fromUrl) {
+            var payload = JSON.stringify({ code: code });
+            if (navigator.sendBeacon) navigator.sendBeacon("/i/e", payload);
+            else
+              fetch("/i/e", { method: "POST", body: payload, keepalive: true }).catch(function () {});
+          }
         } catch (e) {}
       })();
 
