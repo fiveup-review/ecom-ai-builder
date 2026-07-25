@@ -4,9 +4,11 @@ import { createRoot, hydrateRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { captureAffiliate } from './lib/affiliate.ts'
+import { bindAdsEvents } from './lib/ads-events.ts'
 
-// Affiliation (?ref= -> cookie + beacon) : client uniquement, avant le rendu.
+// Affiliation (?ref= -> cookie + beacon) + events pixels : client uniquement.
 captureAffiliate()
+bindAdsEvents()
 
 // Pas de router : pages résolues par pathname (même logique que entry-server).
 // Home = App (statique, hydratée au prerender). Les pages secondaires sont
