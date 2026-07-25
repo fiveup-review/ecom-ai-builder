@@ -146,7 +146,10 @@ export function PhoneMock({
     // écran plus allongé (9/19) rognait 16 % de leur largeur en object-cover.
     <div className={cn("relative aspect-[9/16] w-full select-none", className)}>
       {/* châssis */}
-      <div className="absolute inset-0 rounded-[2.1rem] border border-white/[0.14] bg-[#0a0d0b] p-[3px] shadow-[0_35px_70px_-25px_rgba(0,0,0,0.9)] ring-1 ring-inset ring-white/[0.04]">
+      {/* ombre ADOUCIE (0.35, pas 0.9) : la forte se voyait comme une coupure
+          verticale sur les téléphones voisins quand le hover écarte l'éventail
+          (le fond quasi noir ne la montre pas, elle ne peint QUE les voisins). */}
+      <div className="absolute inset-0 rounded-[2.1rem] border border-white/[0.14] bg-[#0a0d0b] p-[3px] shadow-[0_25px_60px_-28px_rgba(0,0,0,0.35)] ring-1 ring-inset ring-white/[0.04]">
         {/* écran */}
         <div className="relative h-full w-full overflow-hidden rounded-[1.85rem] bg-[#080a09]">
           {src ? (

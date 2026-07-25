@@ -62,13 +62,13 @@ export function FanVariant() {
         <div className="z-0 hidden w-[176px] origin-bottom -rotate-[17deg] opacity-75 transition-transform duration-500 group-hover:-translate-x-9 group-hover:-rotate-[19deg] md:block md:w-[194px]">
           <PhoneMock src={farLeft.src} alt={storeAlt(farLeft)} tint={farLeft.tint} index={0} className="translate-y-12" />
         </div>
-        <div className="z-10 -mx-6 w-[209px] origin-bottom -rotate-[9deg] opacity-90 transition-transform duration-500 group-hover:-translate-x-6 group-hover:-rotate-[11deg] md:w-[231px]">
+        <div className="z-10 -mx-6 w-[231px] origin-bottom -rotate-[9deg] opacity-90 transition-transform duration-500 group-hover:-translate-x-6 group-hover:-rotate-[11deg] md:w-[259px]">
           <PhoneMock src={left.src} alt={storeAlt(left)} tint={left.tint} index={1} className="translate-y-6" />
         </div>
         <div className="z-30 -mx-8 w-[253px] md:w-[286px]">
           <PhoneMock src={center.src} alt={storeAlt(center)} tint={center.tint} index={2} />
         </div>
-        <div className="z-10 -mx-6 w-[209px] origin-bottom rotate-[9deg] opacity-90 transition-transform duration-500 group-hover:translate-x-6 group-hover:rotate-[11deg] md:w-[231px]">
+        <div className="z-10 -mx-6 w-[231px] origin-bottom rotate-[9deg] opacity-90 transition-transform duration-500 group-hover:translate-x-6 group-hover:rotate-[11deg] md:w-[259px]">
           <PhoneMock src={right.src} alt={storeAlt(right)} tint={right.tint} index={3} className="translate-y-6" />
         </div>
         <div className="z-0 hidden w-[176px] origin-bottom rotate-[17deg] opacity-75 transition-transform duration-500 group-hover:translate-x-9 group-hover:rotate-[19deg] md:block md:w-[194px]">
@@ -76,8 +76,12 @@ export function FanVariant() {
         </div>
         {/* fondu : les tels s'enfoncent dans l'ombre en bas.
             -bottom-12 pour couvrir les latéraux (translate-y + rotation les
-            descendent sous la base, sinon leurs bas dépassent). */}
-        <div className="pointer-events-none absolute inset-x-0 -bottom-12 z-40 h-52 bg-gradient-to-t from-background via-background/75 to-transparent" />
+            descendent sous la base, sinon leurs bas dépassent).
+            PAS de stop intermédiaire (via-*) : sur les captures claires, le
+            changement de pente au stop dessinait une ligne de démarcation. */}
+        {/* -inset-x-16 (pas inset-x-0) : au hover les tels extérieurs glissent
+            au-delà de la div -> le bord vertical du fondu se voyait dessus. */}
+        <div className="pointer-events-none absolute -inset-x-16 -bottom-12 z-40 h-52 bg-gradient-to-t from-background to-transparent" />
       </div>
       <MobileScroller />
     </div>
