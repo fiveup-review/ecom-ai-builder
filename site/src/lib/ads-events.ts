@@ -19,7 +19,7 @@ export function bindAdsEvents(): void {
     const href = a.getAttribute("href") ?? ""
     if (!href.startsWith("/i/dl/")) return
     const platform = href.slice(6).split("?")[0]
-    window.fbq?.("track", "Purchase", { content_name: `download_${platform}`, value: 19.99, currency: "EUR" })
-    window.ttq?.track("CompletePayment", { content_name: `download_${platform}`, value: 19.99, currency: "EUR" })
+    window.fbq?.("track", "Purchase", { content_name: `download_${platform}`, value: 34.99, currency: "EUR" })
+    window.ttq?.track("CompletePayment", { content_name: `download_${platform}`, value: 34.99, currency: "EUR" })
   })
 }
