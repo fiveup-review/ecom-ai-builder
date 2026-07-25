@@ -50,26 +50,33 @@ function MobileScroller() {
   )
 }
 
-/* Éventail — tel central droit devant, 2 inclinés derrière, fondu bas dans l'ombre. */
+/* Éventail — tel central droit devant, 2 inclinés derrière, 2 extérieurs encore
+   derrière (5 boutiques), fondu bas dans l'ombre. */
 export function FanVariant() {
-  const [left, center, right] = GALLERY_STORES
+  const [farLeft, left, center, right, farRight] = GALLERY_STORES
   return (
     <div className="relative">
       <Glow />
       {/* desktop : éventail */}
       <div className="group relative hidden items-end justify-center py-6 sm:flex">
-        <div className="w-[209px] origin-bottom -rotate-[9deg] opacity-90 transition-transform duration-500 group-hover:-translate-x-6 group-hover:-rotate-[11deg] md:w-[231px]">
-          <PhoneMock src={left.src} alt={storeAlt(left)} tint={left.tint} index={0} className="translate-y-6" />
+        <div className="z-0 hidden w-[176px] origin-bottom -rotate-[17deg] opacity-75 transition-transform duration-500 group-hover:-translate-x-9 group-hover:-rotate-[19deg] md:block md:w-[194px]">
+          <PhoneMock src={farLeft.src} alt={storeAlt(farLeft)} tint={farLeft.tint} index={0} className="translate-y-12" />
+        </div>
+        <div className="z-10 -mx-6 w-[209px] origin-bottom -rotate-[9deg] opacity-90 transition-transform duration-500 group-hover:-translate-x-6 group-hover:-rotate-[11deg] md:w-[231px]">
+          <PhoneMock src={left.src} alt={storeAlt(left)} tint={left.tint} index={1} className="translate-y-6" />
         </div>
         <div className="z-30 -mx-8 w-[253px] md:w-[286px]">
-          <PhoneMock src={center.src} alt={storeAlt(center)} tint={center.tint} index={1} />
+          <PhoneMock src={center.src} alt={storeAlt(center)} tint={center.tint} index={2} />
         </div>
-        <div className="w-[209px] origin-bottom rotate-[9deg] opacity-90 transition-transform duration-500 group-hover:translate-x-6 group-hover:rotate-[11deg] md:w-[231px]">
-          <PhoneMock src={right.src} alt={storeAlt(right)} tint={right.tint} index={2} className="translate-y-6" />
+        <div className="z-10 -mx-6 w-[209px] origin-bottom rotate-[9deg] opacity-90 transition-transform duration-500 group-hover:translate-x-6 group-hover:rotate-[11deg] md:w-[231px]">
+          <PhoneMock src={right.src} alt={storeAlt(right)} tint={right.tint} index={3} className="translate-y-6" />
+        </div>
+        <div className="z-0 hidden w-[176px] origin-bottom rotate-[17deg] opacity-75 transition-transform duration-500 group-hover:translate-x-9 group-hover:rotate-[19deg] md:block md:w-[194px]">
+          <PhoneMock src={farRight.src} alt={storeAlt(farRight)} tint={farRight.tint} index={4} className="translate-y-12" />
         </div>
         {/* fondu : les tels s'enfoncent dans l'ombre en bas.
-            -bottom-12 pour couvrir les latéraux (translate-y-6 + rotation les
-            descendent ~40px sous la base, sinon leurs bas dépassent). */}
+            -bottom-12 pour couvrir les latéraux (translate-y + rotation les
+            descendent sous la base, sinon leurs bas dépassent). */}
         <div className="pointer-events-none absolute inset-x-0 -bottom-12 z-40 h-52 bg-gradient-to-t from-background via-background/75 to-transparent" />
       </div>
       <MobileScroller />

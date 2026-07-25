@@ -142,7 +142,9 @@ export function PhoneMock({
   className?: string
 }) {
   return (
-    <div className={cn("relative aspect-[9/19] w-full select-none", className)}>
+    // 9/16 : ratio des captures réelles (screenshots mobiles WhatsApp) — un
+    // écran plus allongé (9/19) rognait 16 % de leur largeur en object-cover.
+    <div className={cn("relative aspect-[9/16] w-full select-none", className)}>
       {/* châssis */}
       <div className="absolute inset-0 rounded-[2.1rem] border border-white/[0.14] bg-[#0a0d0b] p-[3px] shadow-[0_35px_70px_-25px_rgba(0,0,0,0.9)] ring-1 ring-inset ring-white/[0.04]">
         {/* écran */}
@@ -152,7 +154,7 @@ export function PhoneMock({
               src={src}
               alt={alt}
               width={640}
-              height={1388}
+              height={1137}
               loading="lazy"
               decoding="async"
               className="h-full w-full object-cover object-top"
