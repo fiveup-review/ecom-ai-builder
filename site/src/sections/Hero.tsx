@@ -18,14 +18,13 @@ export function Hero() {
         </Reveal>
         <Reveal delay={0.05}>
           <h1 className="max-w-4xl font-display text-5xl font-bold tracking-tight text-balance sm:text-7xl">
-            Pendant qu'ils testent 1 produit,{" "}
-            <span className="text-muted-foreground">t'en testes 10.</span>
+            De la recherche produit à ta boutique Shopify complète,{" "}
+            <span className="text-muted-foreground">pilotée par l'IA.</span>
           </h1>
         </Reveal>
         <Reveal delay={0.12} className="hero-rise">
           <p className="max-w-2xl text-lg text-muted-foreground text-pretty sm:text-xl">
-            De la recherche produit à ta boutique Shopify complète, pilotée par
-            l'IA.
+            T'as juste à valider les étapes, l'app fait le reste.
           </p>
         </Reveal>
         <Reveal delay={0.2} className="hero-rise flex flex-col items-center gap-3">
