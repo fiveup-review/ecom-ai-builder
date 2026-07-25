@@ -24,7 +24,7 @@ export function Hero() {
         </Reveal>
         <Reveal delay={0.12} className="hero-rise">
           <p className="max-w-2xl text-lg text-muted-foreground text-pretty sm:text-xl">
-            T'as juste à valider les étapes, l'app fait le reste.
+            Lance ta boutique Shopify en 10 minutes chrono.
           </p>
         </Reveal>
         <Reveal delay={0.2} className="hero-rise flex flex-col items-center gap-3">
